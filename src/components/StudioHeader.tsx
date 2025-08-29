@@ -16,15 +16,14 @@ export const StudioHeaderLight: React.FC<StudioHeaderLightProps> = ({
   return (
     <view
       style={{
-        height: '60px',
+        height: '104px',
         backgroundColor: '#000',
         flexDirection: 'row',
         alignItems: 'center',
         paddingLeft: '16px',
         paddingRight: '16px',
-        paddingTop: '10px',
-        borderBottomWidth: '1px',
-        borderBottomColor: '#333',
+        paddingTop: '44px',
+        borderBottomWidth: '0px'
       }}
     >
       {/* Back Button */}

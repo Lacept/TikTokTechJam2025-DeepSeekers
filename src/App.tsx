@@ -5,10 +5,12 @@ import { ForYouPage } from './components/ForYouPage.js';
 import { ProfilePage } from './components/ProfilePage.js';
 import { BlankPage } from './components/BlankPage.js';
 import { TikTokStudioPage } from './components/TikTokStudioPage.js';
+import { TikTokStudioPageNew } from './components/TikTokStudioPageNew.js';
+import { AnalyticsDashboard } from './components/AnalyticsDashboard.js';
 import './App.css';
 
 type TabType = 'home' | 'discover' | 'create' | 'inbox' | 'profile';
-type PageType = TabType | 'studio';
+type PageType = TabType | 'studio' | 'analytics';
 
 // This App component is the main entry point for your application.
 export function App(props: { onRender?: () => void }) {
@@ -31,6 +33,14 @@ export function App(props: { onRender?: () => void }) {
     setCurrentPage(activeTab);
   };
 
+  const handleNavigateToAnalytics = () => {
+    setCurrentPage('analytics');
+  };
+
+  const handleBackFromAnalytics = () => {
+    setCurrentPage('studio');
+  };
+
   const renderCurrentPage = () => {
     switch (currentPage) {
       case 'home':
@@ -38,7 +48,9 @@ export function App(props: { onRender?: () => void }) {
       case 'profile':
         return <ProfilePage onTabChange={handleTabChange} onNavigateToStudio={handleNavigateToStudio} />;
       case 'studio':
-        return <TikTokStudioPage onBack={handleBackFromStudio} />;
+        return <TikTokStudioPageNew onBack={handleBackFromStudio} onNavigateToAnalytics={handleNavigateToAnalytics} />;
+      case 'analytics':
+        return <AnalyticsDashboard onBack={handleBackFromAnalytics} />;
       case 'discover':
       case 'create':
       case 'inbox':

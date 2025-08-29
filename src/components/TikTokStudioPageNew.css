@@ -1,0 +1,413 @@
+/* TikTok Studio Dashboard Styles - Following Wireframe Specifications */
+.studio-dashboard {
+  display: flex;
+  flex-direction: column;
+  background: #000000;
+  min-height: 100vh;
+  color: white;
+  max-width: 375px;
+  margin: 0 auto;
+}
+
+.scrollable-content {
+  flex: 1;
+  padding: 16px;
+}
+
+/* Header Styles - 60px height, 24px font, bold, centered */
+.header {
+  height: 60px;
+  background: #000000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.header-title {
+  font-size: 24px;
+  font-weight: bold;
+  color: #ffffff;
+  text-align: center;
+}
+
+/* Tab Navigation - 48px height, 16px medium font */
+.tab-navigation {
+  height: 48px;
+  display: flex;
+  background: #000000;
+  border-bottom: 1px solid #374151;
+}
+
+.tab-item {
+  flex: 1;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.2s ease;
+}
+
+.tab-text {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.tab-item.active .tab-text {
+  color: #ffffff;
+}
+
+.tab-item.inactive .tab-text {
+  color: #9ca3af;
+}
+
+.tab-item.active {
+  border-bottom: 2px solid #ffffff;
+}
+
+/* Section Styles - Following wireframe spacing */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.section-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.view-all-link {
+  font-size: 14px;
+  color: #3b82f6;
+}
+
+/* Analytics Section - 24px vertical spacing */
+.analytics-section {
+  margin-bottom: 24px;
+}
+
+.metrics-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.analytics-card {
+  background: #1f2937;
+  border-radius: 8px;
+  padding: 16px;
+  text-align: center;
+  transition: transform 0.2s ease-in-out;
+  min-height: 100px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+/* Value Text - 28px bold, white, 4px margin-bottom */
+.metric-value {
+  font-size: 28px;
+  font-weight: bold;
+  color: #ffffff;
+  margin-bottom: 4px;
+}
+
+/* Label Text - 14px gray, 8px margin-bottom */
+.metric-label {
+  font-size: 14px;
+  color: #9ca3af;
+  margin-bottom: 8px;
+}
+
+/* Growth Indicators - 12px font */
+.growth-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  font-size: 12px;
+}
+
+.growth-indicator.positive {
+  color: #10b981;
+}
+
+.growth-indicator.negative {
+  color: #ef4444;
+}
+
+.growth-indicator.neutral {
+  color: #9ca3af;
+}
+
+.growth-icon {
+  font-size: 12px;
+}
+
+.growth-text {
+  font-size: 12px;
+}
+
+/* Tools Grid - 2x2 layout, 24px margin-bottom */
+.tools-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+
+.tool-card {
+  background: #1f2937;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Icon containers - 48px diameter, circular */
+.tool-icon-container {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+/* Icon colors matching wireframe specifications */
+.tool-icon-container.green {
+  background: #10b981;
+}
+
+.tool-icon-container.yellow {
+  background: #f59e0b;
+}
+
+.tool-icon-container.blue {
+  background: #3b82f6;
+}
+
+.tool-icon-container.pink {
+  background: #ec4899;
+}
+
+/* Icon size - 32px as per wireframe */
+.tool-icon {
+  font-size: 32px;
+}
+
+/* Label - 14px, centered below icon */
+.tool-label {
+  font-size: 14px;
+  color: #ffffff;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* Finance Section - 24px margin-bottom */
+.finance-section {
+  margin-bottom: 24px;
+}
+
+/* Finance Rows - 56px height, 16px horizontal padding */
+.finance-row {
+  height: 56px;
+  background: #1f2937;
+  border-radius: 8px;
+  padding: 0 16px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  transition: background-color 0.2s ease-in-out;
+}
+
+/* Label - 16px, left aligned */
+.finance-label {
+  font-size: 16px;
+  color: #ffffff;
+}
+
+.finance-right {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* Amount - 18px bold, right aligned */
+.finance-amount {
+  font-size: 18px;
+  font-weight: bold;
+  color: #ffffff;
+}
+
+/* Chevron - 16px, gray */
+.chevron {
+  font-size: 16px;
+  color: #9ca3af;
+}
+
+/* Monetization Section - 24px margin-bottom */
+.monetization-section {
+  margin-bottom: 24px;
+}
+
+/* Programs Grid - 2x2 layout, similar to tools */
+.programs-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.monetization-card {
+  background: #1f2937;
+  border-radius: 8px;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: transform 0.2s ease-in-out;
+}
+
+/* Icon containers - 48px diameter, brand colors */
+.monetization-icon-container {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 12px;
+}
+
+/* Icon colors matching brand specifications */
+.monetization-icon-container.red {
+  background: #ef4444;
+}
+
+.monetization-icon-container.purple {
+  background: #8b5cf6;
+}
+
+.monetization-icon-container.cyan {
+  background: #06b6d4;
+}
+
+.monetization-icon-container.yellow {
+  background: #f59e0b;
+}
+
+/* Icon size - 32px consistent with tools */
+.monetization-icon {
+  font-size: 32px;
+}
+
+/* Multi-line labels supported, text-align center */
+.monetization-label {
+  font-size: 14px;
+  color: #ffffff;
+  text-align: center;
+  line-height: 1.3;
+}
+
+/* Interactive States - Following wireframe specifications */
+
+/* Cards - Default: dark gray background, Active/Pressed: subtle scale down (0.98) */
+.analytics-card:active {
+  transform: scale(0.98);
+}
+
+.tool-card:active,
+.monetization-card:active {
+  transform: scale(0.95);
+}
+
+/* Finance Rows - Hover: slightly lighter background */
+.finance-row:hover {
+  background-color: #374151;
+}
+
+/* View All Links - Default: blue text with chevron, Hover: underline */
+.view-all-link:hover {
+  text-decoration: underline;
+}
+
+/* Tab Navigation - Hover: subtle background highlight */
+.tab-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+/* Transitions - 200ms ease-in-out */
+.analytics-card,
+.tool-card,
+.monetization-card,
+.finance-row,
+.tab-item {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Responsive Design - Stack on smaller screens */
+@media (max-width: 320px) {
+  .studio-dashboard {
+    max-width: 320px;
+  }
+  
+  .metrics-row {
+    gap: 8px;
+  }
+  
+  .analytics-card {
+    padding: 12px;
+    min-height: 80px;
+  }
+  
+  .metric-value {
+    font-size: 24px;
+  }
+  
+  .tools-grid,
+  .programs-grid {
+    gap: 8px;
+  }
+  
+  .tool-card,
+  .monetization-card {
+    padding: 16px;
+  }
+  
+  .tool-icon,
+  .monetization-icon {
+    font-size: 28px;
+  }
+}
+
+/* Accessibility */
+.tab-item:focus,
+.analytics-card:focus,
+.tool-card:focus,
+.finance-row:focus,
+.monetization-card:focus,
+.view-all-link:focus {
+  outline: 2px solid #3b82f6;
+}
+
+/* Loading States */
+.analytics-card.loading {
+  background: linear-gradient(90deg, #1f2937 25%, #374151 50%, #1f2937 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
