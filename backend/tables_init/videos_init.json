@@ -1,0 +1,42 @@
+[
+  {
+    "creator_id": 1,
+    "title": "OIAIOIA",
+    "views": 110,
+    "likes": 69,
+    "comments": 10,
+    "shares": 3
+  },
+  {
+    "creator_id": 1,
+    "title": "China Vlog",
+    "views": 52,
+    "likes": 2,
+    "comments": 1,
+    "shares": 1
+  },
+  {
+    "creator_id": 1,
+    "title": "Dank memes",
+    "views": 325,
+    "likes": 50,
+    "comments": 9,
+    "shares": 2
+  },
+  {
+    "creator_id": 1,
+    "title": "Day in the life of a high school student",
+    "views": 1520,
+    "likes": 170,
+    "comments": 21,
+    "shares": 4
+  },
+  {
+    "creator_id": 1,
+    "title": "feeling cute",
+    "views": 23071,
+    "likes": 1090,
+    "comments": 15,
+    "shares": 19
+  }
+]

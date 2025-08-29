@@ -11,3 +11,7 @@ dist/
 .vscode/*
 !.vscode/extensions.json
 .idea
+
+**/__pycache__/
+**/.idea/
+**/env/
