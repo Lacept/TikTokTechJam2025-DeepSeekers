@@ -17,9 +17,10 @@ type ProfileTabType = 'posts' | 'liked';
 
 interface ProfilePageProps {
   onTabChange: (tab: TabType) => void;
+  onNavigateToStudio?: () => void;
 }
 
-export const ProfilePage: React.FC<ProfilePageProps> = ({ onTabChange }) => {
+export const ProfilePage: React.FC<ProfilePageProps> = ({ onTabChange, onNavigateToStudio }) => {
   const [selectedTab, setSelectedTab] = useState<ProfileTabType>('posts');
   const [showMenu, setShowMenu] = useState(false);
 
@@ -257,7 +258,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onTabChange }) => {
               }}
               bindtap={() => {
                 'background only';
-                console.log('TikTok Studio pressed from main page');
+                onNavigateToStudio?.();
               }}
             >
               <text style={{ 
@@ -412,7 +413,7 @@ export const ProfilePage: React.FC<ProfilePageProps> = ({ onTabChange }) => {
               bindtap={() => {
                 'background only';
                 setShowMenu(false);
-                console.log('TikTok Studio pressed');
+                onNavigateToStudio?.();
               }}
             >
               <text style={{ fontSize: '20px', marginRight: '15px' }}>🎬</text>

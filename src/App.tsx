@@ -4,9 +4,11 @@ import { useState } from '@lynx-js/react';
 import { ForYouPage } from './components/ForYouPage.js';
 import { ProfilePage } from './components/ProfilePage.js';
 import { BlankPage } from './components/BlankPage.js';
+import { TikTokStudioPage } from './components/TikTokStudioPage.js';
 import './App.css';
 
 type TabType = 'home' | 'discover' | 'create' | 'inbox' | 'profile';
+type PageType = TabType | 'studio';
 
 // This App component is the main entry point for your application.
 export function App(props: { onRender?: () => void }) {
@@ -14,19 +16,35 @@ export function App(props: { onRender?: () => void }) {
   props.onRender?.();
 
   const [activeTab, setActiveTab] = useState<TabType>('home');
+  const [currentPage, setCurrentPage] = useState<PageType>('home');
+
+  const handleTabChange = (tab: TabType) => {
+    setActiveTab(tab);
+    setCurrentPage(tab);
+  };
+
+  const handleNavigateToStudio = () => {
+    setCurrentPage('studio');
+  };
+
+  const handleBackFromStudio = () => {
+    setCurrentPage(activeTab);
+  };
 
   const renderCurrentPage = () => {
-    switch (activeTab) {
+    switch (currentPage) {
       case 'home':
-        return <ForYouPage onTabChange={setActiveTab} />;
+        return <ForYouPage onTabChange={handleTabChange} />;
       case 'profile':
-        return <ProfilePage onTabChange={setActiveTab} />;
+        return <ProfilePage onTabChange={handleTabChange} onNavigateToStudio={handleNavigateToStudio} />;
+      case 'studio':
+        return <TikTokStudioPage onBack={handleBackFromStudio} />;
       case 'discover':
       case 'create':
       case 'inbox':
-        return <BlankPage title={activeTab} onTabChange={setActiveTab} />;
+        return <BlankPage title={currentPage} onTabChange={handleTabChange} />;
       default:
-        return <ForYouPage onTabChange={setActiveTab} />;
+        return <ForYouPage onTabChange={handleTabChange} />;
     }
   };
 

@@ -15,11 +15,13 @@ interface MenuItem {
 interface ProfileMenuModalProps {
   isVisible: boolean;
   onClose: () => void;
+  onNavigateToStudio?: () => void;
 }
 
 export const ProfileMenuModal: React.FC<ProfileMenuModalProps> = ({
   isVisible,
-  onClose
+  onClose,
+  onNavigateToStudio
 }) => {
   const [selectedItem, setSelectedItem] = useState<string | null>(null);
 
@@ -28,7 +30,7 @@ export const ProfileMenuModal: React.FC<ProfileMenuModalProps> = ({
       id: 'studio',
       title: 'TikTok Studio',
       icon: studioIcon,
-      onPress: () => console.log('TikTok Studio pressed')
+      onPress: () => onNavigateToStudio?.()
     },
     {
       id: 'balance',
