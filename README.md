@@ -5,9 +5,9 @@
 > This project reimagines TikTok's value-sharing system using cryptocurrency, blockchain, and multi-objective optimization.
 ## Tech Stack
 
-- **Languages:** JavaScript, TypeScript, Python, CSS  
+- **Languages:** JavaScript, TypeScript, Python, CSS
 - **Frameworks / Libraries:** Lynx  
-- **Tools:** Node.js  
+- **Tools:** Node.js, Gurobi, Slush
 - **Concepts Used:** Cryptocurrency, Blockchain, Multi-Objective Optimization  
 
 
