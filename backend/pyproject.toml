@@ -1,0 +1,13 @@
+[project]
+name = "tiktok-studio-backend"
+version = "0.1.0"
+description = "Flask backend for TikTok Studio analytics"
+requires-python = ">=3.8"
+dependencies = [
+    "flask>=2.3.0",
+    "flask-cors>=4.0.0",
+    "opencv-python>=4.8.0",
+]
+
+[tool.uv]
+dev-dependencies = []

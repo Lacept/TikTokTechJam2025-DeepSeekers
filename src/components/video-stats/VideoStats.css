@@ -1,0 +1,427 @@
+/* Video Stats Page Styles */
+
+/* Animation Keyframes */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes drawLine {
+  from {
+    width: 0%;
+    opacity: 0;
+  }
+  to {
+    width: 100%;
+    opacity: 1;
+  }
+}
+
+@keyframes fillProgress {
+  from {
+    width: 0%;
+  }
+  to {
+    /* Final width set by inline style */
+  }
+}
+
+@keyframes slideInFromBottom {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fillLocation0 { from { width: 0%; } to { width: 60.1%; } }
+@keyframes fillLocation1 { from { width: 0%; } to { width: 17.1%; } }
+@keyframes fillLocation2 { from { width: 0%; } to { width: 10.8%; } }
+@keyframes fillLocation3 { from { width: 0%; } to { width: 2.5%; } }
+@keyframes fillLocation4 { from { width: 0%; } to { width: 2.0%; } }
+
+/* Base page styling */
+.video-stats-page {
+  background: #111827;
+  min-height: 100vh;
+  color: white;
+}
+
+/* Header Styles */
+.video-stats-header {
+  height: 64px;
+  background: #1f2937;
+  display: flex;
+  align-items: center;
+  padding: 0 16px;
+  border-bottom: 1px solid #374151;
+}
+
+.video-stats-back-button {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 20px;
+  background: transparent;
+  transition: background-color 0.15s ease;
+}
+
+.video-stats-back-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.video-stats-title {
+  flex: 1;
+  font-size: 18px;
+  font-weight: bold;
+  color: white;
+  text-align: center;
+  margin-left: -40px;
+  padding-right: 40px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Tab Navigation */
+.video-stats-tab-nav {
+  height: 48px;
+  display: flex;
+  background: #111827;
+  border-bottom: 1px solid #374151;
+}
+
+.video-stats-tab-button {
+  flex: 1;
+  padding: 12px 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+}
+
+.video-stats-tab-button.active {
+  border-bottom: 2px solid #3b82f6;
+}
+
+.video-stats-tab-text {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.video-stats-tab-button.active .video-stats-tab-text {
+  color: #ffffff;
+}
+
+.video-stats-tab-button.inactive .video-stats-tab-text {
+  color: #9ca3af;
+}
+
+/* Content Styles */
+.video-stats-content {
+  flex: 1;
+  background: #111827;
+  padding: 16px;
+}
+
+/* KPI Cards */
+.kpi-section {
+  margin-bottom: 24px;
+}
+
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.kpi-card {
+  background: #1f2937;
+  border-radius: 12px;
+  padding: 16px;
+  transition: transform 0.2s ease;
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.kpi-card:hover {
+  transform: scale(1.02);
+}
+
+/* Optimizer Metrics (Green Section) */
+.optimizer-section {
+  background: linear-gradient(135deg, #10b981, #059669);
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 24px;
+  animation: slideInFromBottom 0.8s ease-out forwards;
+}
+
+.optimizer-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.optimizer-card {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 10px;
+  padding: 12px;
+  transition: all 0.2s ease;
+}
+
+.optimizer-card:hover {
+  background: rgba(255, 255, 255, 0.1);
+  transform: scale(1.02);
+}
+
+/* Performance Metrics */
+.performance-section {
+  margin-bottom: 24px;
+}
+
+.performance-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.performance-card {
+  background: #1f2937;
+  border-radius: 12px;
+  padding: 16px;
+  transition: transform 0.2s ease;
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.performance-card:hover {
+  transform: scale(1.02);
+}
+
+/* Demographics */
+.demographics-section {
+  margin-bottom: 24px;
+}
+
+.demographics-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.demographics-card {
+  background: #1f2937;
+  border-radius: 12px;
+  padding: 16px;
+  transition: transform 0.2s ease;
+}
+
+.demographics-card:hover {
+  transform: scale(1.02);
+}
+
+/* Progress Bars */
+.progress-bar-container {
+  width: 100%;
+  height: 6px;
+  background: #374151;
+  border-radius: 3px;
+  overflow: hidden;
+  margin-top: 4px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  animation: fillProgress 1.0s ease-out forwards;
+}
+
+/* Locations */
+.locations-section {
+  margin-bottom: 24px;
+}
+
+.locations-card {
+  background: #1f2937;
+  border-radius: 12px;
+  padding: 16px;
+  transition: transform 0.2s ease;
+}
+
+.location-item {
+  margin-bottom: 12px;
+  padding: 8px;
+  border-radius: 8px;
+  transition: background-color 0.15s ease;
+}
+
+.location-item:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Earnings Tab */
+.earnings-section {
+  padding: 16px;
+  background: #111827;
+}
+
+.total-earnings-card {
+  background: #1f2937;
+  border-radius: 16px;
+  padding: 24px;
+  margin-bottom: 20px;
+  text-align: center;
+  transition: transform 0.2s ease;
+  animation: fadeIn 0.8s ease-out forwards;
+}
+
+.total-earnings-card:hover {
+  transform: scale(1.02);
+}
+
+.earnings-chart-card {
+  background: #1f2937;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  transition: transform 0.2s ease;
+  animation: fadeIn 1.0s ease-out forwards;
+}
+
+.earnings-per-view-card {
+  background: #1f2937;
+  border-radius: 16px;
+  padding: 20px;
+  margin-bottom: 20px;
+  transition: transform 0.2s ease;
+  animation: fadeIn 1.2s ease-out forwards;
+}
+
+/* Revenue Split */
+.revenue-split-section {
+  margin-bottom: 24px;
+}
+
+.revenue-split-card {
+  background: #1f2937;
+  border-radius: 12px;
+  padding: 16px;
+  transition: transform 0.2s ease;
+  margin-bottom: 16px;
+  animation: fadeIn 0.6s ease-out forwards;
+}
+
+.revenue-split-card:hover {
+  transform: scale(1.02);
+}
+
+/* Loading States */
+.loading-container {
+  flex: 1;
+  background: #111827;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 20px;
+}
+
+.loading-text {
+  color: white;
+  font-size: 16px;
+  text-align: center;
+}
+
+/* Error States */
+.error-container {
+  flex: 1;
+  background: #111827;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+}
+
+.error-text {
+  color: #ef4444;
+  font-size: 16px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.error-details {
+  color: #9ca3af;
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 20px;
+}
+
+.retry-button {
+  background: #3b82f6;
+  padding: 12px 24px;
+  border-radius: 6px;
+  transition: background-color 0.2s ease;
+}
+
+.retry-button:hover {
+  background: #2563eb;
+}
+
+/* Interactive States */
+.video-stats-header .video-stats-back-button:active {
+  background-color: rgba(255, 255, 255, 0.15);
+}
+
+.video-stats-tab-button:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.kpi-card:active,
+.performance-card:active,
+.demographics-card:active,
+.locations-card:active,
+.total-earnings-card:active,
+.earnings-chart-card:active,
+.earnings-per-view-card:active,
+.revenue-split-card:active {
+  transform: scale(0.98);
+}
+
+.optimizer-card:active {
+  transform: scale(0.98);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+/* Responsive Design */
+@media (max-width: 320px) {
+  .kpi-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .performance-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .demographics-grid {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+  
+  .optimizer-grid {
+    grid-template-columns: 1fr;
+    gap: 8px;
+  }
+  
+  .video-stats-content {
+    padding: 12px;
+  }
+}

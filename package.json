@@ -12,7 +12,9 @@
     "test": "vitest run"
   },
   "dependencies": {
-    "@lynx-js/react": "^0.112.4"
+    "@lynx-js/react": "^0.112.4",
+    "chart.js": "^4.5.0",
+    "react-chartjs-2": "^5.3.0"
   },
   "devDependencies": {
     "@biomejs/biome": "2.1.3",
