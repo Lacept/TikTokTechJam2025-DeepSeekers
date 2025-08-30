@@ -6,7 +6,7 @@
 ## Tech Stack
 
 - **Languages:** JavaScript, TypeScript, Python, CSS
-- **Frameworks / Libraries:** Lynx  
+- **Frameworks / Libraries:** Lynx,Flask
 - **Tools:** Node.js, Gurobi, Slush
 - **Concepts Used:** Cryptocurrency, Blockchain, Multi-Objective Optimization  
 
