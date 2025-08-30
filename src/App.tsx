@@ -1,4 +1,33 @@
 // src/App.tsx
+// src/index.tsx (VERY TOP, before other imports that might fetch)
+// 1) do this BEFORE anything else that might import the API file
+import { setApiBase } from "./api/profile.js";
+
+// Foreground-safe bootstrap: set the base for both fg & bg bundles.
+// Also supports ?apiHost= and localStorage('apiHost') without code changes.
+(() => {
+  try {
+    const loc = window.location; // present in foreground
+    const overrideFromQuery = new URLSearchParams(loc.search).get("apiHost");
+    const overrideFromLS = window.localStorage?.getItem("apiHost");
+
+    const host =
+      (overrideFromQuery && overrideFromQuery.trim()) ||
+      (overrideFromLS && overrideFromLS.trim()) ||
+      loc.hostname ||
+      "127.0.0.1";
+
+    setApiBase(host, loc.protocol); // sets globalThis.__API_BASE__ too
+
+    // Optional: Quick debug in console
+    // eslint-disable-next-line no-console
+    console.log("[Bootstrap] API_BASE =", (globalThis as any).__API_BASE__);
+  } catch {
+    // If we're somehow not in a windowed context, the lazy resolver in api/profile.ts will handle it.
+  }
+})();
+
+
 import * as React from 'react';
 import { useState } from '@lynx-js/react';
 import { ForYouPage } from './components/ForYouPage.js';
@@ -44,9 +73,9 @@ export function App(props: { onRender?: () => void }) {
   const renderCurrentPage = () => {
     switch (currentPage) {
       case 'home':
-        return <ForYouPage onTabChange={handleTabChange} />;
+        return <ForYouPage activeTab={activeTab} onTabChange={handleTabChange} />;
       case 'profile':
-        return <ProfilePage onTabChange={handleTabChange} onNavigateToStudio={handleNavigateToStudio} />;
+        return <ProfilePage activeTab={activeTab} onTabChange={handleTabChange} onNavigateToStudio={handleNavigateToStudio} />;
       case 'studio':
         return <TikTokStudioPageNew onBack={handleBackFromStudio} onNavigateToAnalytics={handleNavigateToAnalytics} />;
       case 'analytics':
@@ -54,9 +83,9 @@ export function App(props: { onRender?: () => void }) {
       case 'discover':
       case 'create':
       case 'inbox':
-        return <BlankPage title={currentPage} onTabChange={handleTabChange} />;
+        return <BlankPage activeTab={activeTab} title={currentPage} onTabChange={handleTabChange} />;
       default:
-        return <ForYouPage onTabChange={handleTabChange} />;
+        return <ForYouPage activeTab={activeTab} onTabChange={handleTabChange} />;
     }
   };
 

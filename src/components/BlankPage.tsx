@@ -5,11 +5,12 @@ import { BottomNavigation } from './BottomNavigation.js';
 type TabType = 'home' | 'discover' | 'create' | 'inbox' | 'profile';
 
 interface BlankPageProps {
+  activeTab: TabType;
   title: string;
   onTabChange: (tab: TabType) => void;
 }
 
-export const BlankPage: React.FC<BlankPageProps> = ({ title, onTabChange }) => {
+export const BlankPage: React.FC<BlankPageProps> = ({ activeTab, title, onTabChange }) => {
   return (
     <view style={{ width: '100%', height: '100%', backgroundColor: 'black' }}>
       {/* Status Bar */}
@@ -62,7 +63,7 @@ export const BlankPage: React.FC<BlankPageProps> = ({ title, onTabChange }) => {
       </view>
 
       {/* Bottom Navigation */}
-      <BottomNavigation activeTab={title as TabType} onTabChange={onTabChange} />
+      <BottomNavigation activeTab={activeTab} onTabChange={onTabChange} />
     </view>
   );
 };

@@ -1,0 +1,72 @@
+[
+  {
+    "creator_id": 1,
+    "title": "OIAIOIA",
+    "views": 110,
+    "likes": 69,
+    "comments": 10,
+    "shares": 3,
+    "watch_completion": 0.1,
+    "engagement_rate": 0.9,
+    "engagement_diversity": 0.4,
+    "rewatch": 0.3,
+    "nlp_quality": 0.2,
+    "compliance": 1
+  },
+  {
+    "creator_id": 1,
+    "title": "China Vlog",
+    "views": 52,
+    "likes": 2,
+    "comments": 1,
+    "shares": 1,
+    "watch_completion": 0.3,
+    "engagement_rate": 0.7,
+    "engagement_diversity": 0.4,
+    "rewatch": 0.1,
+    "nlp_quality": 0.8,
+    "compliance": 1
+  },
+  {
+    "creator_id": 1,
+    "title": "Dank memes",
+    "views": 325,
+    "likes": 50,
+    "comments": 9,
+    "shares": 2,
+    "watch_completion": 0.8,
+    "engagement_rate": 0.4,
+    "engagement_diversity": 0.2,
+    "rewatch": 0.7,
+    "nlp_quality": 0.9,
+    "compliance": 1
+  },
+  {
+    "creator_id": 1,
+    "title": "Day in the life of a high school student",
+    "views": 1520,
+    "likes": 170,
+    "comments": 21,
+    "shares": 4,
+    "watch_completion": 0.5,
+    "engagement_rate": 0.1,
+    "engagement_diversity": 0.7,
+    "rewatch": 0.3,
+    "nlp_quality": 0.99,
+    "compliance": 1
+  },
+  {
+    "creator_id": 1,
+    "title": "feeling cute",
+    "views": 23071,
+    "likes": 1090,
+    "comments": 15,
+    "shares": 19,
+    "watch_completion": 0.9,
+    "engagement_rate": 0.9,
+    "engagement_diversity": 0.9,
+    "rewatch": 0.9,
+    "nlp_quality": 0.1,
+    "compliance": 0
+  }
+]
