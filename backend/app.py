@@ -8,6 +8,7 @@ import base64
 import shutil
 
 from adrev_opti import get_optimised_values
+from donate_opti import get_coin_split
 
 
 #Initialise app
@@ -60,6 +61,11 @@ def init_db():
             proj_earnings FLOAT NOT NULL DEFAULT 0,
             quality_score FLOAT NOT NULL DEFAULT 0,
             
+            norm_coins INTEGER NOT NULL DEFAULT 0,
+            prem_coins INTEGER NOT NULL DEFAULT 0,
+            x_n FLOAT NOT NULL DEFAULT 0,
+            x_p FLOAT NOT NULL DEFAULT 0,
+            
             created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
         );
     """
@@ -107,15 +113,15 @@ def init_db():
     )
     db.commit()
 
-    # Update ad revenue split in table
-    compute_optimised_values()
+
+
 
     # Populate videos folder
     for vid_filepath in VIDEOS_DIR.iterdir():
         vid_filepath.unlink()
     videos_init_dir = Path(app.root_path) / Path("tables_init/videos")
     for vid_filepath in videos_init_dir.iterdir():
-        shutil.copy2(vid_filepath,  VIDEOS_DIR / Path(f"{vid_filepath.stem}.{vid_filepath.suffix}"))
+        shutil.copy2(vid_filepath,  VIDEOS_DIR / Path(f"{vid_filepath.stem}{vid_filepath.suffix}"))
 
     # Populate thumbnails folder
     for thumbnail_filepath in THUMBNAILS_DIR.iterdir():
@@ -123,6 +129,14 @@ def init_db():
     for video_path in VIDEOS_DIR.iterdir():
         video_id = video_path.stem
         save_thumbnail(video_id)
+
+    # Update ad revenue split in table
+    compute_optimised_values()
+
+    # Update premium and normal coin revnue split in table
+    video_ids = list(range(1,len(videos_init_rows) + 1))
+    for video_id in video_ids:
+        compute_coin_splits(video_id)
 
 
 # ---------- Routes ----------
@@ -137,6 +151,11 @@ def index():
 def compute_optimised_values():
     conn = sqlite3.connect(DB_PATH)
     get_optimised_values(conn)
+    conn.close()
+
+def compute_coin_splits(video_id):
+    conn = sqlite3.connect(DB_PATH)
+    get_coin_split(conn, video_id)
     conn.close()
 
 def save_thumbnail(video_id):
@@ -207,6 +226,9 @@ def upload_video():
 
     # Update ad revenue split in videos table
     compute_optimised_values()
+
+    # Update coin split
+    compute_coin_splits(video_id)
 
     return {
         "ok": True,

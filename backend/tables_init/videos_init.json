@@ -11,7 +11,9 @@
     "engagement_diversity": 0.4,
     "rewatch": 0.3,
     "nlp_quality": 0.2,
-    "compliance": 1
+    "compliance": 1,
+    "norm_coins": 250,
+    "prem_coins": 350
   },
   {
     "creator_id": 1,
@@ -25,7 +27,9 @@
     "engagement_diversity": 0.4,
     "rewatch": 0.1,
     "nlp_quality": 0.8,
-    "compliance": 1
+    "compliance": 1,
+    "norm_coins": 170,
+    "prem_coins": 50
   },
   {
     "creator_id": 1,
@@ -39,7 +43,9 @@
     "engagement_diversity": 0.2,
     "rewatch": 0.7,
     "nlp_quality": 0.9,
-    "compliance": 1
+    "compliance": 1,
+    "norm_coins": 500,
+    "prem_coins": 400
   },
   {
     "creator_id": 1,
@@ -53,7 +59,9 @@
     "engagement_diversity": 0.7,
     "rewatch": 0.3,
     "nlp_quality": 0.99,
-    "compliance": 1
+    "compliance": 1,
+    "norm_coins": 400,
+    "prem_coins": 200
   },
   {
     "creator_id": 1,
@@ -67,6 +75,8 @@
     "engagement_diversity": 0.9,
     "rewatch": 0.9,
     "nlp_quality": 0.1,
-    "compliance": 0
+    "compliance": 0,
+    "norm_coins": 100,
+    "prem_coins": 50
   }
 ]
