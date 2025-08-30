@@ -30,7 +30,7 @@ conn.close()
 # ----------------------------
 # 1) Inputs (edit these)
 # ----------------------------
-P = 1_000_000  # total creator pool, note that this term can be interpreted in many ways. This can be the ad pool for a select amount of ads. shld be a dynamic value
+P = 10_000  # total creator pool, note that this term can be interpreted in many ways. This can be the ad pool for a select amount of ads. shld be a dynamic value
 lambda_fair = 0.6 # these are weights/ parameters which definitely can be learnt and refined over time with more data
 lambda_eff  = 0.4
 alpha = 0.7
@@ -118,13 +118,13 @@ for v in videos:
 # ----------------------------
 # 3) Build PWL for log(p)
 # ----------------------------
-# Domain for p_v in the log: [p_min, p_max]
-# p_min must be > 0 so log is defined. If you want a floor, set floors[...] >= p_min.
-p_min = 1.0
-p_max = 300_000.0
+# Dynamic domain for p_v in the log so that all payouts lie within [p_min, p_max]
+# p_min must be > 0 so log is defined.
+p_min = max(1e-8 * P, 1e-8)  # tiny but positive; scale with pool
+p_max = max(P, 1.0)          # cover the full feasible range of payouts
 
-# 50 log-spaced breakpoints works well; tune as desired
-K = 50
+# Log-spaced breakpoints (increase K slightly for smoother curvature)
+K = 60
 x_pts = [p_min * (p_max/p_min)**(k/(K-1)) for k in range(K)]  # geometric spacing
 y_pts = [math.log(x) for x in x_pts]  # natural log
 
@@ -153,6 +153,11 @@ for v in videos:
         p[vid].LB = max(lb, p_min)
         # Optional cap already in var definition via ub=caps[vid]
         m.addGenConstrPWL(p[vid], z[vid], x_pts, y_pts, name=f"pwl_log_{vid}")
+
+# Feasibility check: sum of lower bounds for compliant videos must not exceed P
+total_lb = sum(max(floors.get(v["id"], 0.0), p_min) for v in videos if v["C"] == 1)
+if total_lb > P + 1e-9:
+    raise ValueError(f"Infeasible: sum of minimum payouts ({total_lb:.6f}) exceeds pool P={P}.")
 
 # Budget constraint: sum p_v = P
 m.addConstr(gp.quicksum(p[v["id"]] for v in videos) == P, name="budget")
@@ -188,16 +193,17 @@ if m.Status == GRB.OPTIMAL:
         # Non-compliant already forced to 0; clamp just in case
         if not (0.0 <= pct <= 1.0):
             pct = max(0.0, min(1.0, pct))
-        updates.append((pct, vid))
+        payout = float(p[vid].X)
+        updates.append((pct, payout, vid))
 
     try:
         conn = sqlite3.connect(db_path)
         cur = conn.cursor()
-        cur.executemany("UPDATE videos SET rev_prop = ? WHERE video_id = ?;", updates)
+        cur.executemany("UPDATE videos SET rev_prop = ?, proj_earnings = ? WHERE video_id = ?;", updates)
         conn.commit()
         conn.close()
-        print(f"\nWrote rev_prop for {len(updates)} videos to database.")
+        print(f"\nWrote rev_prop and proj_earnings for {len(updates)} videos to database.")
     except Exception as e:
-        print(f"\nWARNING: Failed to write rev_prop to database: {e}")
+        print(f"\nWARNING: Failed to write rev_prop and proj_earnings to database: {e}")
 else:
     print(f"Model ended with status {m.Status}")
