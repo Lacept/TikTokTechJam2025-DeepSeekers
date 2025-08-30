@@ -11,6 +11,8 @@ import os
 #Initialise app
 app = Flask(__name__)
 DB_PATH = Path(f"{app.root_path}/app.db")
+VIDEOS_DIR = Path(f"{app.root_path}/static/videos")
+THUMBNAILS_DIR = Path(f"{app.root_path}/static/thumbnails")
 
 
 # ---------- DB helpers ----------
@@ -37,13 +39,21 @@ def init_db():
     db.execute(drop_table_sql)
     create_table_sql = """
         CREATE TABLE videos (
-            video_id   INTEGER PRIMARY KEY AUTOINCREMENT,
-            creator_id INTEGER NOT NULL DEFAULT 0,
+            video_id         INTEGER PRIMARY KEY AUTOINCREMENT,
+            creator_id       INTEGER NOT NULL DEFAULT 0,
             title      TEXT NOT NULL,
             views      INTEGER NOT NULL DEFAULT 0,
             likes      INTEGER NOT NULL DEFAULT 0,
             comments   INTEGER NOT NULL DEFAULT 0,
             shares     INTEGER NOT NULL DEFAULT 0,
+            
+            watch_completion FLOAT NOT NULL DEFAULT 0.5,
+            engagement_rate FLOAT NOT NULL DEFAULT 0.5,
+            engagement_diversity FLOAT NOT NULL DEFAULT 0.5,
+            rewatch FLOAT NOT NULL DEFAULT 0.5,
+            nlp_quality FLOAT NOT NULL DEFAULT 0.5,
+            compliance INTEGER NOT NULL DEFAULT 0,
+            
             created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
         );
     """
@@ -53,13 +63,15 @@ def init_db():
         videos_init = json.load(f)
     # Populate videos table with fake data
     videos_init_rows = [list(row.values()) for row in videos_init]
+    colnames = list(videos_init[0].keys())
+    print(colnames)
     print(videos_init_rows)
     db.executemany(
-        "INSERT INTO videos (creator, title, views, likes, comments, shares) VALUES (?, ?, ?, ?, ?)",
+        f"INSERT INTO videos ({", ".join(colnames)}) VALUES ({", ".join("?" for i in range(len(colnames)))})",
         videos_init_rows,
     )
     # Helpful indexes if you’ll query by these often
-    db.execute("CREATE INDEX IF NOT EXISTS idx_videos_creator ON videos(creator);")
+    db.execute("CREATE INDEX IF NOT EXISTS idx_videos_creator ON videos(creator_id);")
     db.commit()
 
     # 2. Creators Table
@@ -73,7 +85,7 @@ def init_db():
            name       INTEGER NOT NULL DEFAULT 0, 
            following  INTEGER NOT NULL DEFAULT 0, 
            followers  INTEGER NOT NULL DEFAULT 0,
-           likes      INTEGER NOT NULL DEFAULT 0, 
+           likes      INTEGER NOT NULL DEFAULT 0 
        ); 
                        """
     db.execute(create_table_sql)
@@ -84,10 +96,19 @@ def init_db():
     creators_init_rows = [list(row.values()) for row in creators_init]
     print(creators_init_rows)
     db.executemany(
-        "INSERT INTO videos (name, following, followers, likes) VALUES (?, ?, ?, ?)",
+        "INSERT INTO creators (name, following, followers, likes) VALUES (?, ?, ?, ?)",
         creators_init_rows,
     )
     db.commit()
+
+    # Populate videos
+    # only if got time
+
+    # Populate thumbnails folder
+    for video_path in VIDEOS_DIR.iterdir():
+        video_id = video_path.stem
+        save_thumbnail(video_id)
+
 
 # ---------- Routes ----------
 @app.route("/")
@@ -118,12 +139,22 @@ def save_video(video_id, file):
 def gen_random_video_data():
     views = random.randint(100, 50000)
     likes = random.randint(int(views * 0.3), int(views * 0.5))
-    shares = random.randint(int(likes * 0.05), int(likes * 0.1))
-    comments = random.randint(int(likes * 0.2), int(likes * 0.3))
-    return views, likes, shares, comments
+    data = {
+        "views": views,
+        "likes": likes,
+        "shares": random.randint(int(likes * 0.05), int(likes * 0.1)),
+        "comments": random.randint(int(likes * 0.2), int(likes * 0.3)),
+        "watch_completion": random.random(),
+        "engagement_rate": random.random(),
+        "engagement_diversity": random.random(),
+        "rewatch": random.random(),
+        "nlp_quality": random.random(),
+        "compliance": random.randint(0, 1)
+    }
+    return data
 
 # Uploading videos
-@app.post("/upload_video")
+@app.post("/upload-video")
 def upload_video():
     if "file" not in request.files:
         return {"error": "no file part"}, 400
@@ -133,16 +164,17 @@ def upload_video():
         return {"error": "no selected file"}, 400
 
     # Get video info
-    creator_id = request.form.get("creator_id")
-    title = request.form.get("title")
-    views, likes, shares, comments = gen_random_video_data()
+    new_row = {
+        "creator_id": request.form.get("creator_id"),
+        "title": request.form.get("title")
+    } | gen_random_video_data()
     # Store video data in DB
     db = get_db()
     cur = None
     try:
         cur = db.execute(
-            "INSERT INTO videos (creator_id, title, views, likes, comments, shares) VALUES (?, ?, ?, ?, ?)",
-            (creator_id, title, views, likes, comments, shares),
+        f"INSERT INTO videos ({", ".join(new_row.keys())}) VALUES ({", ".join("?" for i in range(len(new_row)))})",
+            tuple(new_row.values()),
         )
         db.commit()
     except sqlite3.IntegrityError as e:
@@ -175,9 +207,9 @@ def get_video():
             return jsonify({"error": "not found"}), 404
 
         # If the video id exists, send the corresponding video
-        video_filename = f"{app.root_path}/static/videos/{video_id}.mp4"
+        video_filepath = VIDEOS_DIR / Path(f"{video_id}.mp4")
         return send_file(
-            video_filename,
+            str(video_filepath),
             mimetype="video/mp4",  # set your real mimetype if different
             as_attachment=False,  # inline playback
             conditional=True,  # support Range
@@ -201,9 +233,9 @@ def get_video_thumbnail():
         if not row:
             return jsonify({"error": "not found"}), 404
         # If the video id exists, send the corresponding thumbnail
-        thumbnail_filename = f"{app.root_path}/static/thumbnails/{video_id}.jpg"
+        thumbnail_filepath = THUMBNAILS_DIR / f"{video_id}.jpg"
         return send_file(
-            thumbnail_filename,
+            str(thumbnail_filepath),
             mimetype="image/jpeg",  # set your real mimetype if different
         )
     except KeyError:
