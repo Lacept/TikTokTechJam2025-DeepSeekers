@@ -190,19 +190,19 @@ if m.Status == GRB.OPTIMAL:
     for v in videos:
         vid = v["id"]
         pct = float(p[vid].X / P) if vid in p else 0.0
-        # Non-compliant already forced to 0; clamp just in case
         if not (0.0 <= pct <= 1.0):
             pct = max(0.0, min(1.0, pct))
         payout = float(p[vid].X)
-        updates.append((pct, payout, vid))
+        qv = float(v.get("Q", 0.0))
+        updates.append((pct, payout, qv, vid))
 
     try:
         conn = sqlite3.connect(db_path)
         cur = conn.cursor()
-        cur.executemany("UPDATE videos SET rev_prop = ?, proj_earnings = ? WHERE video_id = ?;", updates)
+        cur.executemany("UPDATE videos SET rev_prop = ?, proj_earnings = ?, quality_score = ? WHERE video_id = ?;", updates)
         conn.commit()
         conn.close()
-        print(f"\nWrote rev_prop and proj_earnings for {len(updates)} videos to database.")
+        print(f"\nWrote rev_prop, proj_earnings, and quality_score for {len(updates)} videos to database.")
     except Exception as e:
         print(f"\nWARNING: Failed to write rev_prop and proj_earnings to database: {e}")
 else:
