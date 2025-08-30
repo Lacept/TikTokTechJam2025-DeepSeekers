@@ -1,94 +1,140 @@
-# pip install gurobipy  (needs a Gurobi license)
+# pip install gurobipy  (requires a Gurobi license)
 import gurobipy as gp
 from gurobipy import GRB
+import math
+import sqlite3
+import pandas as pd
+
+phi_W, phi_E, phi_D, phi_R, phi_S = 0.35, 0.25, 0.15, 0.10, 0.15
+
+def get_quality_score(W: float, E: float, D: float, R: float, S: float, C: int = 1) -> float:
+    """
+    Geometric aggregation with fixed phi's, then compliance and clamp.
+    Q_v = C * min(1, W^phi_W * E^phi_E * D^phi_D * R^phi_R * S^phi_S).
+    Inputs W,E,D,R,S should already be in [0,1]; C in {0,1}.
+
+    For detailed calculation of W,E,D,R and S, they require user specific interaction for each video, for which we will skip the calculation
+    The mathematical formula can be found in the pdf for calculation of quality score. The intention is that TikTok can calculate them
+    trivially as TikTok should easily have access to these data, (i.e. how a specific user interacts with this specific video)
+    """
+    q = (W ** phi_W) \
+        * (E ** phi_E) \
+        * (D ** phi_D) \
+        * (R ** phi_R) \
+        * (S ** phi_S)
+    return C * min(1.0, q)
 
 # -----------------------------
-# 1) Data (edit with your real data)
+# Inputs for video, query from database
 # -----------------------------
-V = ["v1", "v2", "v3"]                 # eligible videos (policy-compliant)
-Nn = {"v1": 1200, "v2": 300, "v3": 500}   # Normal coins given to each video
-Np = {"v1":  600, "v2": 900, "v3": 200}   # Premium coins given to each video
-Q  = {"v1": 0.70, "v2": 0.40, "v3": 0.85} # quality scores in [0,1]
+db_path = "app.db"
+# Connect to database to dynamically query video statistics, used as inputs to calculate quality score, Q, which is input for optimisation model
+conn = sqlite3.connect(db_path)
 
-# If you already have totals, you can set them explicitly.
-N_n = sum(Nn[v] for v in V)            # total Normal coins
-N_p = sum(Np[v] for v in V)            # total Premium coins
+video_id = 1  # comes from user selection, to be dynamic
 
-# Quality multiplier f(Q) = 1 + θ Q, with an optional penalty for low quality
+q = """
+SELECT 
+    video_id,
+    watch_completion,
+    engagement_rate,
+    engagement_diversity,
+    rewatch,
+    nlp_quality,
+    compliance,
+    norm_coins,
+    prem_coins
+FROM videos
+WHERE video_id = ?;
+"""
+
+df = pd.read_sql_query(q, conn, params=(video_id,))
+conn.close()
+
+# Guard: ensure we found the row
+if df.empty:
+    raise ValueError(f"video_id {video_id} not found in videos table")
+
+# Pull components and compute Q function
+W = float(df.loc[0, "watch_completion"])
+E = float(df.loc[0, "engagement_rate"])
+D = float(df.loc[0, "engagement_diversity"])
+Rcomp = float(df.loc[0, "rewatch"])
+S = float(df.loc[0, "nlp_quality"])
+C_gate = int(df.loc[0, "compliance"])  # 0/1
+Nn = int(df.loc[0, "norm_coins"])
+Np = int(df.loc[0, "prem_coins"])
+Q = get_quality_score(W, E, D, Rcomp, S, C_gate)
+
 theta   = 0.8
-Q_min   = 0.30
-eta     = 0.9                          # < 1, used only if Q_v < Q_min
-f = {v: (eta if Q[v] < Q_min else (1.0 + theta*Q[v])) for v in V}
+eps     = 1e-6
+xn_max  = 0.75
+xp_max  = 0.95
+delta   = 0.05
+Delta   = 0.35
 
-# Objective weights
-lambda_1 = 1.0    # platform revenue
-lambda_2 = 1.0    # creator utility (quality-weighted)
-lambda_3 = 0.3    # premium adoption incentive
-
-# Premium adoption incentive: I = γ (x_p - x_n)
-gamma = 1.0
-
-# Policy / business constraints
-delta     = 0.05   # premium must reward at least delta more than normal
-R_min     = 200.0  # minimum platform revenue (coins kept by platform)
-x_n_max   = 0.75
-x_p_max   = 0.95
+lam_rev = 1.0   # weight on revenue
+lam_util= 6   # weight on creator utility
+lam_inc = 0.3   # weight on premium adoption incentive
 
 # -----------------------------
-# 2) Model
+# Anchors for normalization
 # -----------------------------
-m = gp.Model("coin_profit_share")
+R_max = Nn + Np
+R_min   = 0.1*R_max # TikTok will keep at least 10% of revenue of coins for any video
+den_R = max(1e-9, R_max - R_min)
 
-# Decision variables: fractions of coins paid to creators
-x_n = m.addVar(lb=0.0, ub=x_n_max, name="x_n")
-x_p = m.addVar(lb=0.0, ub=x_p_max, name="x_p")
+pay_cap = xn_max*Nn + xp_max*Np
+U_max   = (1 + theta*Q) * math.log(eps + pay_cap)
+den_U   = max(1e-9, U_max)
 
-# TikTok revenue kept (coins): R = (1 - x_n) N_n + (1 - x_p) N_p
-R = (1 - x_n) * N_n + (1 - x_p) * N_p
+den_I   = max(1e-9, Delta - delta)
 
-# Creator utility (quality-weighted):
-# U = Σ_v ( x_n * Nn[v] + x_p * Np[v] ) * f(Q_v)
-U = gp.quicksum((x_n * Nn[v] + x_p * Np[v]) * f[v] for v in V)
+# -----------------------------
+# Model
+# -----------------------------
+m = gp.Model("single_video")
+m.Params.OutputFlag = 1
 
-# Premium adoption incentive: I = γ (x_p - x_n)
-I = gamma * (x_p - x_n)
+# Decision variables
+xn = m.addVar(lb=0.0, ub=xn_max, name="x_n")
+xp = m.addVar(lb=0.0, ub=xp_max, name="x_p")
 
-# Objective
-m.setObjective(lambda_1 * R + lambda_2 * U + lambda_3 * I, GRB.MAXIMIZE)
+# Revenue & payout
+R   = (1 - xn)*Nn + (1 - xp)*Np
+pay = xn*Nn + xp*Np
+
+# Log utility
+z = m.addVar(lb=eps, name="z_pay")
+y = m.addVar(lb=-GRB.INFINITY, name="log_pay")
+m.addConstr(z == eps + pay)
+m.addGenConstrLog(z, y)      # y = log(z)
+
+U = (1 + theta*Q) * y
+
+# Normalized terms
+R_norm = (R - R_min) / den_R
+U_norm = U / den_U
+I_norm = ((xp - xn) - delta) / den_I
 
 # Constraints
-m.addConstr(x_p >= x_n + delta, name="premium_gap")   # (C1)
-m.addConstr(R   >= R_min,       name="revenue_floor") # (C2)
-# bounds (C3) already enforced by variable ubs/lbs
+m.addConstr(xp >= xn + delta, name="gap_floor")
+m.addConstr(xp - xn <= Delta, name="gap_cap")
+m.addConstr(R >= R_min,       name="revenue_floor")
 
-m.Params.OutputFlag = 1
+# Objective
+m.setObjective(lam_rev*R_norm + lam_util*U_norm + lam_inc*I_norm, GRB.MAXIMIZE)
+
 m.optimize()
 
 # -----------------------------
-# 3) Report results
+# Results
 # -----------------------------
 if m.Status == GRB.OPTIMAL:
-    xn = x_n.X
-    xp = x_p.X
-    Rv = R.getValue()
-    Uv = U.getValue()
-    Iv = I.getValue()
-
-    print("\nOptimal fractions paid to creators:")
-    print(f"  x_n (Normal)  = {xn:.4f}")
-    print(f"  x_p (Premium) = {xp:.4f}")
-    print(f"\nDecomposition (at optimum):")
-    print(f"  TikTok Revenue R  = {Rv:.2f} coins kept")
-    print(f"  Creator Utility U = {Uv:.2f} (quality-weighted)")
-    print(f"  Adoption I        = {Iv:.2f}")
-    print(f"  Objective value   = {m.ObjVal:.4f}")
-
-    # (Optional) Per-video creator payout in coins (not quality-weighted):
-    # payout_v = x_n*Nn[v] + x_p*Np[v]
-    print("\nPer-video payouts (coins to creators):")
-    for v in V:
-        payout_v = xn * Nn[v] + xp * Np[v]
-        print(f"  {v}: {payout_v:.2f}")
-
-else:
-    print(f"Model ended with status {m.Status}")
+    print("\n=== Optimal solution ===")
+    print(f"x_n = {xn.X:.4f}, x_p = {xp.X:.4f}")
+    print(f"Revenue kept R = {R.getValue():.2f}")
+    print(f"Creator payout pay = {pay.getValue():.2f}")
+    print(f"U (quality util) = {U.getValue():.4f}")
+    print(f"Normalized terms: R={R_norm.getValue():.3f}, U={U_norm.getValue():.3f}, I={I_norm.getValue():.3f}")
+    print(f"Objective value = {m.ObjVal:.4f}")
