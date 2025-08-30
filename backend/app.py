@@ -1,11 +1,13 @@
-from flask import Flask, request, jsonify, g, abort, send_file
+from flask import Flask, request, jsonify, g, send_file
 import sqlite3
 from pathlib import Path
 import json
 import cv2
 import random
 import base64
-import os
+import shutil
+
+from adrev_opti import get_optimised_values
 
 
 #Initialise app
@@ -54,6 +56,10 @@ def init_db():
             nlp_quality FLOAT NOT NULL DEFAULT 0.5,
             compliance INTEGER NOT NULL DEFAULT 0,
             
+            rev_prop FLOAT NOT NULL DEFAULT 0,
+            proj_earnings FLOAT NOT NULL DEFAULT 0,
+            quality_score FLOAT NOT NULL DEFAULT 0,
+            
             created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
         );
     """
@@ -101,10 +107,19 @@ def init_db():
     )
     db.commit()
 
-    # Populate videos
-    # only if got time
+    # Update ad revenue split in table
+    compute_optimised_values()
+
+    # Populate videos folder
+    for vid_filepath in VIDEOS_DIR.iterdir():
+        vid_filepath.unlink()
+    videos_init_dir = Path(app.root_path) / Path("tables_init/videos")
+    for vid_filepath in videos_init_dir.iterdir():
+        shutil.copy2(vid_filepath,  VIDEOS_DIR / Path(f"{vid_filepath.stem}.{vid_filepath.suffix}"))
 
     # Populate thumbnails folder
+    for thumbnail_filepath in THUMBNAILS_DIR.iterdir():
+        thumbnail_filepath.unlink()
     for video_path in VIDEOS_DIR.iterdir():
         video_id = video_path.stem
         save_thumbnail(video_id)
@@ -119,6 +134,11 @@ def index():
 ####### POST METHODSSSSS #######
 
 # Helpers
+def compute_optimised_values():
+    conn = sqlite3.connect(DB_PATH)
+    get_optimised_values(conn)
+    conn.close()
+
 def save_thumbnail(video_id):
     try:
         video_filename = f"{app.root_path}/static/videos/{video_id}.mp4"
@@ -185,10 +205,30 @@ def upload_video():
     save_video(video_id, file)
     save_thumbnail(video_id)
 
+    # Update ad revenue split in videos table
+    compute_optimised_values()
+
     return {
         "ok": True,
         "video_id": video_id,
     }, 201
+
+###### GET REQUESTS (CREATORS) #########
+@app.get("/get-creator-data")
+def get_creator_data():
+    try:
+        creator_id = request.args['creator_id']
+        db = get_db()
+        row = db.execute(
+            "SELECT * FROM creators WHERE creator_id = ?",
+            (creator_id,),
+        ).fetchone()
+        if not row:
+            return jsonify({"error": "not found"}), 404
+        return jsonify(dict(row))
+    except KeyError:
+        return "creator_id parameter is missing."
+
 
 
 ###### GET REQUESTS (VIDEOS) #########
