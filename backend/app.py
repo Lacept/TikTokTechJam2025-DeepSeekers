@@ -8,6 +8,9 @@ import base64
 import shutil
 from flask_cors import CORS  # <-- ensure installed
 
+from adrev_opti import get_optimised_values
+from donate_opti import get_coin_split
+
 # ---- App ----
 app = Flask(__name__)
 # Wide-open CORS for dev. Adjust origins if you prefer.
@@ -39,24 +42,29 @@ def init_db():
         CREATE TABLE videos (
             video_id         INTEGER PRIMARY KEY AUTOINCREMENT,
             creator_id       INTEGER NOT NULL DEFAULT 0,
-            title            TEXT NOT NULL,
-            views            INTEGER NOT NULL DEFAULT 0,
-            likes            INTEGER NOT NULL DEFAULT 0,
-            comments         INTEGER NOT NULL DEFAULT 0,
-            shares           INTEGER NOT NULL DEFAULT 0,
-
-            watch_completion FLOAT  NOT NULL DEFAULT 0.5,
-            engagement_rate  FLOAT  NOT NULL DEFAULT 0.5,
+            title      TEXT NOT NULL,
+            views      INTEGER NOT NULL DEFAULT 0,
+            likes      INTEGER NOT NULL DEFAULT 0,
+            comments   INTEGER NOT NULL DEFAULT 0,
+            shares     INTEGER NOT NULL DEFAULT 0,
+            
+            watch_completion FLOAT NOT NULL DEFAULT 0.5,
+            engagement_rate FLOAT NOT NULL DEFAULT 0.5,
             engagement_diversity FLOAT NOT NULL DEFAULT 0.5,
-            rewatch          FLOAT  NOT NULL DEFAULT 0.5,
-            nlp_quality      FLOAT  NOT NULL DEFAULT 0.5,
-            compliance       INTEGER NOT NULL DEFAULT 0,
-
-            rev_prop         FLOAT  NOT NULL DEFAULT 0,
-            proj_earnings    FLOAT  NOT NULL DEFAULT 0,
-            quality_score    FLOAT  NOT NULL DEFAULT 0,
-
-            created_at       TEXT   NOT NULL DEFAULT CURRENT_TIMESTAMP
+            rewatch FLOAT NOT NULL DEFAULT 0.5,
+            nlp_quality FLOAT NOT NULL DEFAULT 0.5,
+            compliance INTEGER NOT NULL DEFAULT 0,
+            
+            rev_prop FLOAT NOT NULL DEFAULT 0,
+            proj_earnings FLOAT NOT NULL DEFAULT 0,
+            quality_score FLOAT NOT NULL DEFAULT 0,
+            
+            norm_coins INTEGER NOT NULL DEFAULT 0,
+            prem_coins INTEGER NOT NULL DEFAULT 0,
+            x_n FLOAT NOT NULL DEFAULT 0,
+            x_p FLOAT NOT NULL DEFAULT 0,
+            
+            created_at TEXT NOT NULL DEFAULT CURRENT_TIMESTAMP
         );
     """)
 
@@ -113,6 +121,14 @@ def init_db():
     for video_path in VIDEOS_DIR.glob("*.mp4"):
         save_thumbnail(video_path.stem)
 
+    # Update ad revenue split in table
+    compute_optimised_values()
+
+    # Update premium and normal coin revnue split in table
+    video_ids = list(range(1, len(videos_init_rows) + 1))
+    for video_id in video_ids:
+        compute_coin_splits(video_id)
+
 # ---- Routes ----
 @app.get("/health")
 def health():
@@ -123,6 +139,16 @@ def index():
     return "Hello World"
 
 # ---- Helpers ----
+def compute_optimised_values():
+    conn = sqlite3.connect(DB_PATH)
+    get_optimised_values(conn)
+    conn.close()
+
+def compute_coin_splits(video_id):
+    conn = sqlite3.connect(DB_PATH)
+    get_coin_split(conn, video_id)
+    conn.close()
+
 def save_thumbnail(video_id: str):
     try:
         video_filename = f"{app.root_path}/static/videos/{video_id}.mp4"
@@ -183,6 +209,13 @@ def upload_video():
     video_id = cur.lastrowid
     save_video(video_id, file)
     save_thumbnail(str(video_id))
+
+    # Update ad revenue split in videos table
+    compute_optimised_values()
+
+    # Update coin split
+    compute_coin_splits(video_id)
+
     return {"ok": True, "video_id": video_id}, 201
 
 # ---- GET (Creators) ----
@@ -197,13 +230,72 @@ def get_creator_by_name():
         return jsonify({"error": "not found"}), 404
     return jsonify(dict(row))
 
+@app.get("/get-creator-data")
+def get_creator_data():
+    try:
+        creator_id = request.args['creator_id']
+        db = get_db()
+        row = db.execute(
+            "SELECT * FROM creators WHERE creator_id = ?",
+            (creator_id,),
+        ).fetchone()
+        if not row:
+            return jsonify({"error": "not found"}), 404
+        return jsonify(dict(row))
+    except KeyError:
+        return "creator_id parameter is missing."
+
 @app.get("/list-creators")
 def list_creators():
     db = get_db()
     rows = db.execute("SELECT creator_id, name, following, followers, likes FROM creators ORDER BY creator_id").fetchall()
     return jsonify([dict(r) for r in rows])
+# Read (get) a single video by video_id
+@app.get("/get-video")
+def get_video():
+    try:
+        video_id = request.args['video_id']
+        # Check if video id even exists in videos table
+        db = get_db()
+        row = db.execute("SELECT video_id FROM videos WHERE video_id = ?", (video_id,)).fetchone()
+        if not row:
+            return jsonify({"error": "not found"}), 404
 
+        # If the video id exists, send the corresponding video
+        video_filepath = VIDEOS_DIR / Path(f"{video_id}.mp4")
+        return send_file(
+            str(video_filepath),
+            mimetype="video/mp4",  # set your real mimetype if different
+            as_attachment=False,  # inline playback
+            conditional=True,  # support Range
+            etag=True,  # caching/If-None-Match
+            last_modified=None  # let Flask infer from the file
+        )
+    except KeyError:
+        return "video_id parameter is missing."
 # ---- GET (Videos) ----
+
+# Read (get) a video thumbnail for a single video by video_id
+@app.get("/get-video-thumbnail")
+def get_video_thumbnail():
+    try:
+        video_id = request.args['video_id']
+        # Check if video id even exists in videos table
+        db = get_db()
+        row = db.execute(
+            "SELECT * FROM videos WHERE video_id = ?",
+            (video_id,),
+        ).fetchone()
+        if not row:
+            return jsonify({"error": "not found"}), 404
+        # If the video id exists, send the corresponding thumbnail
+        thumbnail_filepath = THUMBNAILS_DIR / f"{video_id}.jpg"
+        return send_file(
+            str(thumbnail_filepath),
+            mimetype="image/jpeg",  # set your real mimetype if different
+        )
+    except KeyError:
+        return "video_id parameter is missing."
 @app.get("/get-all-videos-data")
 def get_all_videos_data():
     creator_id = request.args.get('creator_id')

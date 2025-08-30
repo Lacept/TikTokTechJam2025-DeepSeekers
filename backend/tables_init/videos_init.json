@@ -12,9 +12,8 @@
     "rewatch": 0.3,
     "nlp_quality": 0.2,
     "compliance": 1,
-    "rev_prop": 0.02,
-    "proj_earnings": 2.45,
-    "quality_score": 0.55
+    "norm_coins": 250,
+    "prem_coins": 350
   },
   {
     "creator_id": 1,
@@ -29,9 +28,8 @@
     "rewatch": 0.1,
     "nlp_quality": 0.8,
     "compliance": 1,
-    "rev_prop": 0.01,
-    "proj_earnings": 1.25,
-    "quality_score": 0.68
+    "norm_coins": 170,
+    "prem_coins": 50
   },
   {
     "creator_id": 1,
@@ -46,9 +44,8 @@
     "rewatch": 0.7,
     "nlp_quality": 0.9,
     "compliance": 1,
-    "rev_prop": 0.05,
-    "proj_earnings": 8.75,
-    "quality_score": 0.82
+    "norm_coins": 500,
+    "prem_coins": 400
   },
   {
     "creator_id": 1,
@@ -63,9 +60,8 @@
     "rewatch": 0.3,
     "nlp_quality": 0.99,
     "compliance": 1,
-    "rev_prop": 0.08,
-    "proj_earnings": 18.50,
-    "quality_score": 0.71
+    "norm_coins": 400,
+    "prem_coins": 200
   },
   {
     "creator_id": 1,
@@ -80,8 +76,7 @@
     "rewatch": 0.9,
     "nlp_quality": 0.1,
     "compliance": 0,
-    "rev_prop": 0.25,
-    "proj_earnings": 45.67,
-    "quality_score": 0.45
+    "norm_coins": 100,
+    "prem_coins": 50
   }
 ]
