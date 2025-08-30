@@ -68,7 +68,7 @@ export function LynxChart({ data, title, type }: LynxChartProps) {
           {yAxisLabels.map((label, index) => (
             <text key={`y-${index}`} style={{
               color: '#9ca3af',
-              fontSize: '12px',
+              fontSize: '14px',
               textAlign: 'right'
             }}>
               {formatValue(label.value)}
@@ -135,7 +135,7 @@ export function LynxChart({ data, title, type }: LynxChartProps) {
         {data.map((item) => (
           <text key={`x-${item.day}`} style={{
             color: '#9ca3af',
-            fontSize: '12px',
+            fontSize: '14px',
             textAlign: 'center',
             flex: '1'
           }}>

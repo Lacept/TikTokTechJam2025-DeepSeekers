@@ -7,18 +7,20 @@ import { TabNavigation } from './analytics/TabNavigation.js';
 import { TimeFilter } from './analytics/TimeFilter.js';
 import { ViewsTab } from './analytics/ViewsTab.js';
 import { RevenueTab } from './analytics/RevenueTab.js';
+import { ContentTab } from './analytics/ContentTab.js';
 import './AnalyticsDashboard.css';
 
 interface AnalyticsDashboardProps {
   onBack: () => void;
+  onVideoSelect?: (videoId: number) => void;
 }
 
-export function AnalyticsDashboardNew({ onBack }: AnalyticsDashboardProps) {
-  const [activeTab, setActiveTab] = useState<'views' | 'revenue'>('views');
+export function AnalyticsDashboardNew({ onBack, onVideoSelect }: AnalyticsDashboardProps) {
+  const [activeTab, setActiveTab] = useState<'views' | 'revenue' | 'content'>('views');
   const [timeRange, setTimeRange] = useState<TimeRange>('7d');
   const { analyticsData, isLoading, refreshAnalytics } = useAnalytics();
 
-  const handleTabSwitch = useCallback((tab: 'views' | 'revenue') => {
+  const handleTabSwitch = useCallback((tab: 'views' | 'revenue' | 'content') => {
     'background only';
     setActiveTab(tab);
   }, []);
@@ -34,6 +36,13 @@ export function AnalyticsDashboardNew({ onBack }: AnalyticsDashboardProps) {
     // Refresh data when time range changes
     refreshAnalytics(newTimeRange);
   }, [refreshAnalytics]);
+
+  const handleVideoSelect = useCallback((videoId: number) => {
+    'background only';
+    if (onVideoSelect) {
+      onVideoSelect(videoId);
+    }
+  }, [onVideoSelect]);
 
   return (
     <view className="analytics-dashboard">
@@ -54,11 +63,18 @@ export function AnalyticsDashboardNew({ onBack }: AnalyticsDashboardProps) {
             isLoading={isLoading && !analyticsData} 
             timeRange={timeRange}
           />
-        ) : (
+        ) : activeTab === 'revenue' ? (
           <RevenueTab 
             data={analyticsData} 
             isLoading={isLoading && !analyticsData}
             timeRange={timeRange}
+          />
+        ) : (
+          <ContentTab
+            data={analyticsData}
+            isLoading={isLoading && !analyticsData}
+            timeRange={timeRange}
+            onVideoSelect={handleVideoSelect}
           />
         )}
       </scroll-view>

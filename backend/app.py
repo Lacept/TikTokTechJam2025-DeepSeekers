@@ -233,6 +233,90 @@ def get_all_videos_thumbnails():
             })
     return jsonify({"ok": True, "images": out})
 
+@app.get("/get-video-data")
+def get_video_data():
+    video_id = request.args.get('video_id')
+    if not video_id:
+        return jsonify({"error": "video_id parameter is required"}), 400
+    
+    db = get_db()
+    row = db.execute("SELECT * FROM videos WHERE video_id = ?", (video_id,)).fetchone()
+    if not row:
+        return jsonify({"error": "Video not found"}), 404
+    
+    video_data = dict(row)
+    
+    # Calculate additional derived metrics for the detail view
+    video_data['revenue_proportion_percent'] = video_data['rev_prop'] * 100
+    video_data['quality_score_percent'] = video_data['quality_score'] * 100
+    video_data['engagement_rate_percent'] = video_data['engagement_rate'] * 100
+    video_data['watch_completion_percent'] = video_data['watch_completion'] * 100
+    video_data['engagement_diversity_percent'] = video_data['engagement_diversity'] * 100
+    video_data['rewatch_percent'] = video_data['rewatch'] * 100
+    video_data['nlp_quality_percent'] = video_data['nlp_quality'] * 100
+    
+    # Add mock demographic data (would come from analytics system in real app)
+    video_data['demographics'] = {
+        'gender': {
+            'male': 80,
+            'female': 20,
+            'other': 0
+        },
+        'age_groups': {
+            '18-24': 61,
+            '25-34': 32,
+            '35-44': 4,
+            '45-54': 2,
+            '55+': 1
+        },
+        'top_locations': {
+            'Singapore': 60.1,
+            'Other': 17.1,
+            'Malaysia': 10.8,
+            'Myanmar (Burma)': 2.5,
+            'Philippines': 2.0
+        }
+    }
+    
+    # Add mock earnings over time data (7 days)
+    import datetime
+    base_date = datetime.datetime.now()
+    earnings_timeline = []
+    cumulative = 0
+    daily_earnings = video_data['proj_earnings'] / 7  # Spread over 7 days
+    
+    for i in range(7):
+        date = base_date - datetime.timedelta(days=6-i)
+        daily_amount = daily_earnings * (0.5 + random.random())  # Add some variation
+        cumulative += daily_amount
+        earnings_timeline.append({
+            'date': date.strftime('%m/%d'),
+            'daily_earnings': round(daily_amount, 2),
+            'cumulative_earnings': round(cumulative, 2)
+        })
+    
+    video_data['earnings_timeline'] = earnings_timeline
+    
+    # Calculate earnings per view
+    if video_data['views'] > 0:
+        video_data['earnings_per_view'] = video_data['proj_earnings'] / video_data['views']
+    else:
+        video_data['earnings_per_view'] = 0
+    
+    # Add mock revenue split data
+    video_data['revenue_split'] = {
+        'premium_coins': {
+            'amount': video_data['proj_earnings'] * 0.65,
+            'percentage': 65
+        },
+        'standard_coins': {
+            'amount': video_data['proj_earnings'] * 0.35,
+            'percentage': 35
+        }
+    }
+    
+    return jsonify(video_data)
+
 if __name__ == "__main__":
     with app.app_context():
         init_db()

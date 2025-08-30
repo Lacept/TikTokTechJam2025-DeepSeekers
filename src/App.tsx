@@ -36,10 +36,11 @@ import { ForYouPage } from './components/ForYouPage.js';
 import { ProfilePage } from './components/ProfilePage.js';
 import { TikTokStudioPage } from './components/TikTokStudioPage.js';
 import { TikTokStudioPageNew } from './components/TikTokStudioPageNew.js';
+import { VideoStatsPage } from './components/video-stats/VideoStatsPage.js';
 import './App.css';
 
 type TabType = 'home' | 'discover' | 'create' | 'inbox' | 'profile';
-type PageType = TabType | 'studio' | 'analytics';
+type PageType = TabType | 'studio' | 'analytics' | 'video-stats';
 
 // This App component is the main entry point for your application.
 export function App(props: { onRender?: () => void }) {
@@ -48,6 +49,7 @@ export function App(props: { onRender?: () => void }) {
 
   const [activeTab, setActiveTab] = useState<TabType>('home');
   const [currentPage, setCurrentPage] = useState<PageType>('home');
+  const [selectedVideoId, setSelectedVideoId] = useState<number | null>(null);
 
   const handleTabChange = (tab: TabType) => {
     setActiveTab(tab);
@@ -68,6 +70,16 @@ export function App(props: { onRender?: () => void }) {
 
   const handleBackFromAnalytics = () => {
     setCurrentPage('studio');
+  };
+
+  const handleVideoSelect = (videoId: number) => {
+    setSelectedVideoId(videoId);
+    setCurrentPage('video-stats');
+  };
+
+  const handleBackFromVideoStats = () => {
+    setCurrentPage('analytics');
+    setSelectedVideoId(null);
   };
 
   const renderCurrentPage = () => {
@@ -92,7 +104,14 @@ export function App(props: { onRender?: () => void }) {
           />
         );
       case 'analytics':
-        return <AnalyticsDashboardNew onBack={handleBackFromAnalytics} />;
+        return <AnalyticsDashboardNew onBack={handleBackFromAnalytics} onVideoSelect={handleVideoSelect} />;
+      case 'video-stats':
+        if (selectedVideoId === null) {
+          // Fallback if no video is selected
+          setCurrentPage('analytics');
+          return <AnalyticsDashboardNew onBack={handleBackFromAnalytics} onVideoSelect={handleVideoSelect} />;
+        }
+        return <VideoStatsPage videoId={selectedVideoId} onBack={handleBackFromVideoStats} />;
       case 'discover':
       case 'create':
       case 'inbox':

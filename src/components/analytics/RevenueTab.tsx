@@ -197,8 +197,71 @@ const RevenueBreakdownSection = ({ data, isLoading }: RevenueBreakdownSectionPro
   return (
     <view className="breakdown-section">
       <text className="breakdown-title">Revenue Breakdown</text>
+      <AdRevenueItem data={data} isLoading={isLoading} />
       <PremiumCoinsItem data={data} isLoading={isLoading} />
       <StandardCoinsItem data={data} isLoading={isLoading} />
+    </view>
+  );
+};
+
+// Ad Revenue Item Component
+const AdRevenueItem = ({ data, isLoading }: BreakdownItemProps) => {
+  const handlePress = (event: any) => {
+    'main thread';
+    event.currentTarget.setStyleProperty('transform', 'scale(0.98)');
+    setTimeout(() => {
+      event.currentTarget.setStyleProperty('transform', 'scale(1)');
+    }, 150);
+  };
+
+  const handleTap = () => {
+    'background only';
+    console.log('Ad revenue tapped');
+  };
+
+  if (isLoading || !data) {
+    return (
+      <view className="breakdown-item">
+        <view className="breakdown-header">
+          <view className="icon-container ad-revenue">
+            <text className="breakdown-icon">📺</text>
+          </view>
+          <view className="breakdown-info">
+            <text className="breakdown-title">Ad Revenue</text>
+            <text className="breakdown-amount">Loading...</text>
+            <text className="breakdown-percentage">-- of total</text>
+          </view>
+        </view>
+        <view className="progress-container">
+          <view className="progress-track">
+            <view className="progress-fill ad-revenue" style={{ width: '0%' }} />
+          </view>
+        </view>
+      </view>
+    );
+  }
+
+  return (
+    <view
+      className="breakdown-item"
+      main-thread:bindtap={handlePress}
+      bindtap={handleTap}
+    >
+      <view className="breakdown-header">
+        <view className="icon-container ad-revenue">
+          <text className="breakdown-icon">📺</text>
+        </view>
+        <view className="breakdown-info">
+          <text className="breakdown-title">Ad Revenue</text>
+          <text className="breakdown-amount">${data.revenueBreakdown.adRevenue.toFixed(2)}</text>
+          <text className="breakdown-percentage">{data.revenueBreakdown.adPercentage.toFixed(1)}% of total</text>
+        </view>
+      </view>
+      <view className="progress-container">
+        <view className="progress-track">
+          <view className="progress-fill ad-revenue" style={{ width: `${data.revenueBreakdown.adPercentage}%` }} />
+        </view>
+      </view>
     </view>
   );
 };

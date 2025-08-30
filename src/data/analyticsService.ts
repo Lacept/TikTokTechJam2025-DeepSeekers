@@ -22,8 +22,10 @@ export type AnalyticsData = {
     sharesChange: number;
   };
   revenueBreakdown: {
+    adRevenue: number;
     premiumCoins: number;
     standardCoins: number;
+    adPercentage: number;
     premiumPercentage: number;
     standardPercentage: number;
   };
@@ -100,9 +102,11 @@ function calculateAnalyticsFromVideos(videos: Video[], timeRange: TimeRange): An
   const viewsGrowth = mockPrevious.views > 0 ? ((totalViews - mockPrevious.views) / mockPrevious.views) * 100 : 0;
   const revenueGrowth = mockPrevious.revenue > 0 ? ((totalRevenue - mockPrevious.revenue) / mockPrevious.revenue) * 100 : 0;
 
-  // Calculate revenue breakdown (mock percentages)
-  const premiumPercentage = 66.9;
-  const standardPercentage = 33.1;
+  // Calculate revenue breakdown (using realistic percentages)
+  const adPercentage = 68.0;
+  const premiumPercentage = 20.0;
+  const standardPercentage = 12.0;
+  const adRevenue = totalRevenue * (adPercentage / 100);
   const premiumCoins = totalRevenue * (premiumPercentage / 100);
   const standardCoins = totalRevenue * (standardPercentage / 100);
 
@@ -124,8 +128,10 @@ function calculateAnalyticsFromVideos(videos: Video[], timeRange: TimeRange): An
       sharesChange: -3,     // Mock
     },
     revenueBreakdown: {
+      adRevenue,
       premiumCoins,
       standardCoins,
+      adPercentage,
       premiumPercentage,
       standardPercentage,
     },
@@ -297,10 +303,12 @@ function getMockAnalyticsData(timeRange: TimeRange): AnalyticsData {
       sharesChange: -3,
     },
     revenueBreakdown: {
-      premiumCoins: data.totalRevenue * 0.669,
-      standardCoins: data.totalRevenue * 0.331,
-      premiumPercentage: 66.9,
-      standardPercentage: 33.1,
+      adRevenue: data.totalRevenue * 0.68,
+      premiumCoins: data.totalRevenue * 0.20,
+      standardCoins: data.totalRevenue * 0.12,
+      adPercentage: 68.0,
+      premiumPercentage: 20.0,
+      standardPercentage: 12.0,
     },
   };
 }

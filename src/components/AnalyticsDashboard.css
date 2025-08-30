@@ -499,6 +499,10 @@
   justify-content: center;
 }
 
+.icon-container.ad-revenue {
+  background: #10b981;
+}
+
 .icon-container.premium {
   background: #fbbf24;
 }
@@ -552,14 +556,19 @@
   animation: fillProgress 1.2s ease-out forwards;
 }
 
+.progress-fill.ad-revenue {
+  background: #10b981;
+  width: 68%;
+}
+
 .progress-fill.premium {
   background: #fbbf24;
-  width: 66.9%;
+  width: 20%;
 }
 
 .progress-fill.standard {
   background: #6b7280;
-  width: 33.1%;
+  width: 12%;
 }
 
 @keyframes fillProgress {
@@ -804,5 +813,223 @@ Lynx Chart Animation */
   }
   to {
     opacity: 1;
+  }
+}
+
+/* ===== CONTENT TAB STYLES ===== */
+
+.content-tab {
+  padding: 16px;
+  background: #000000;
+}
+
+.loading-text {
+  color: white;
+  text-align: center;
+  font-size: 16px;
+  padding: 40px 0;
+}
+
+/* Section Headers */
+.section-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  margin-top: 24px;
+}
+
+.section-title {
+  color: white;
+  font-size: 18px;
+  font-weight: 600;
+}
+
+.section-subtitle {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+/* Top Performing Section */
+.top-performing-section {
+  margin-bottom: 32px;
+}
+
+.top-videos-scroll {
+  margin-top: 16px;
+  padding: 0 0 16px 0;
+}
+
+.top-videos-vertical {
+  margin-top: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+/* Top Video Cards */
+.top-video-card {
+  background: #1f2937;
+  border-radius: 12px;
+  padding: 16px;
+  margin-right: 12px;
+  width: 200px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  transition: transform 0.2s ease;
+}
+
+.top-video-card:active {
+  transform: scale(0.98);
+}
+
+.video-thumbnail-placeholder {
+  width: 60px;
+  height: 60px;
+  background: #374151;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.thumbnail-icon {
+  font-size: 20px;
+}
+
+.top-video-info {
+  flex: 1;
+}
+
+.top-video-title {
+  color: white;
+  font-size: 14px;
+  font-weight: 500;
+  margin-bottom: 4px;
+  line-height: 1.3;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.top-video-views {
+  color: #9ca3af;
+  font-size: 12px;
+  margin-bottom: 2px;
+}
+
+.top-video-engagement {
+  color: #10b981;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+/* Video List */
+.video-list {
+  background: transparent;
+}
+
+/* Main Video Cards */
+.video-card {
+  background: #1f2937;
+  border-radius: 12px;
+  padding: 16px;
+  margin-bottom: 12px;
+  display: flex;
+  gap: 16px;
+  transition: transform 0.2s ease;
+}
+
+.video-card:active {
+  transform: scale(0.99);
+}
+
+.video-thumbnail {
+  width: 60px;
+  height: 60px;
+  background: #374151;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.video-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  min-width: 0;
+}
+
+/* Title Row with Menu */
+.title-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 12px;
+}
+
+.video-title {
+  color: white;
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.3;
+  flex: 1;
+  min-width: 0;
+}
+
+.menu-icon {
+  color: #6b7280;
+  font-size: 16px;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+/* Metrics Rows */
+.metrics-row {
+  display: flex;
+  gap: 16px;
+}
+
+.metric-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  align-items: flex-start;
+}
+
+.metric-item-spacer {
+  flex: 1;
+}
+
+.metric-text {
+  color: white;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1.2;
+}
+
+/* Responsive adjustments for content tab */
+@media (max-width: 320px) {
+  .top-video-card {
+    width: 180px;
+  }
+  
+  .metrics-row {
+    gap: 12px;
+  }
+  
+  .engagement-row {
+    gap: 12px;
+  }
+  
+  .video-thumbnail {
+    width: 60px;
+    height: 60px;
   }
 }

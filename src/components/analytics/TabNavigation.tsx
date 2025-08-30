@@ -1,8 +1,8 @@
 // src/components/analytics/TabNavigation.tsx
 
 interface TabNavigationProps {
-  activeTab: 'views' | 'revenue';
-  onTabChange: (tab: 'views' | 'revenue') => void;
+  activeTab: 'views' | 'revenue' | 'content';
+  onTabChange: (tab: 'views' | 'revenue' | 'content') => void;
 }
 
 export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
@@ -15,6 +15,10 @@ export function TabNavigation({ activeTab, onTabChange }: TabNavigationProps) {
       <RevenueTab
         isActive={activeTab === 'revenue'}
         onPress={() => onTabChange('revenue')}
+      />
+      <ContentTab
+        isActive={activeTab === 'content'}
+        onPress={() => onTabChange('content')}
       />
     </view>
   );
@@ -82,6 +86,39 @@ const RevenueTab = ({ isActive, onPress }: RevenueTabProps) => {
       bindtap={handlePress}
     >
       <text className="tab-text">Revenue</text>
+    </view>
+  );
+};
+
+// Content Tab Component
+interface ContentTabProps {
+  isActive: boolean;
+  onPress: () => void;
+}
+
+const ContentTab = ({ isActive, onPress }: ContentTabProps) => {
+  const handleTabPress = (event: any) => {
+    'main thread';
+    if (isActive) return;
+
+    event.currentTarget.setStyleProperty('background-color', '#374151');
+    setTimeout(() => {
+      event.currentTarget.setStyleProperty('background-color', 'transparent');
+    }, 150);
+  };
+
+  const handlePress = () => {
+    'background only';
+    onPress();
+  };
+
+  return (
+    <view
+      className={`tab-item ${isActive ? 'active' : 'inactive'}`}
+      main-thread:bindtap={handleTabPress}
+      bindtap={handlePress}
+    >
+      <text className="tab-text">Content</text>
     </view>
   );
 };

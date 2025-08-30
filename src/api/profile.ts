@@ -61,7 +61,7 @@ function currentApiBase(): string {
 
   const qHost = readQueryParam('apiHost');
   if (qHost) {
-    const base = `http://${qHost}:5000`;
+    const base = `http://${qHost}:5001`;
     __API_BASE_INTERNAL = base;
     try {
       (globalThis as any).__API_BASE__ = base;
@@ -71,7 +71,7 @@ function currentApiBase(): string {
 
   const lsHost = readLocalStorage('apiHost');
   if (lsHost) {
-    const base = `http://${lsHost}:5000`;
+    const base = `http://${lsHost}:5001`;
     __API_BASE_INTERNAL = base;
     try {
       (globalThis as any).__API_BASE__ = base;
@@ -81,7 +81,7 @@ function currentApiBase(): string {
 
   const loc = deriveFromLocation();
   if (loc) {
-    const base = `${loc.protocol}//${loc.hostname}:5000`;
+    const base = `${loc.protocol}//${loc.hostname}:5001`;
     __API_BASE_INTERNAL = base;
     try {
       (globalThis as any).__API_BASE__ = base;
@@ -89,7 +89,7 @@ function currentApiBase(): string {
     return base;
   }
 
-  return 'http://127.0.0.1:5000';
+  return 'http://127.0.0.1:5001';
 }
 
 export function __getApiBase() {
@@ -175,6 +175,15 @@ export async function getProfile(
   const API_BASE = currentApiBase();
   const r = await fetch(
     `${API_BASE}/get-profile?name=${encodeURIComponent(name)}`,
+  );
+  if (!r.ok) throw new Error(await r.text());
+  return r.json();
+}
+
+export async function getVideoData(videoId: number): Promise<any> {
+  const API_BASE = currentApiBase();
+  const r = await fetch(
+    `${API_BASE}/get-video-data?video_id=${videoId}`,
   );
   if (!r.ok) throw new Error(await r.text());
   return r.json();
