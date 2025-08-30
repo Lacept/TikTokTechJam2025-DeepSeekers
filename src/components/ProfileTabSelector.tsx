@@ -1,6 +1,7 @@
 // src/components/ProfileTabSelector.tsx
-import * as React from 'react';
+
 import { useState } from '@lynx-js/react';
+import type * as React from 'react';
 
 type TabType = 'posts' | 'liked';
 

@@ -1,5 +1,7 @@
 // src/components/TikTokStudioPageNew.tsx
-import { useState, useCallback } from '@lynx-js/react';
+import { useCallback, useState } from '@lynx-js/react';
+import { useAnalytics } from '../contexts/AnalyticsContext.js';
+import type { AnalyticsData } from '../data/analyticsService.js';
 import './TikTokStudioPageNew.css';
 
 interface TikTokStudioPageNewProps {
@@ -12,6 +14,9 @@ export function TikTokStudioPageNew({
   onNavigateToAnalytics,
 }: TikTokStudioPageNewProps) {
   const [activeTab, setActiveTab] = useState<'tools' | 'live'>('tools');
+  const { analyticsData } = useAnalytics();
+
+  // Analytics data is now hardcoded and always available - no preloading needed
 
   // Event handlers
   const handleTabSwitch = useCallback((tab: 'tools' | 'live') => {
@@ -34,7 +39,7 @@ export function TikTokStudioPageNew({
   return (
     <view className="studio-dashboard">
       {/* Header */}
-      <Header />
+      <Header onBack={onBack} />
 
       {/* Tab Navigation */}
       <TabNavigation activeTab={activeTab} onTabChange={handleTabSwitch} />
@@ -42,7 +47,10 @@ export function TikTokStudioPageNew({
       {/* Main Content */}
       <scroll-view className="scrollable-content">
         {/* Analytics Section */}
-        <AnalyticsSection onViewAll={handleAnalyticsViewAll} />
+        <AnalyticsSection 
+          onViewAll={handleAnalyticsViewAll} 
+          analyticsData={analyticsData}
+        />
 
         {/* Tools Grid */}
         <ToolsGrid />
@@ -58,10 +66,23 @@ export function TikTokStudioPageNew({
 }
 
 // Header Component
-const Header = () => {
+interface HeaderProps {
+  onBack: () => void;
+}
+
+const Header = ({ onBack }: HeaderProps) => {
+  const handleBackPress = () => {
+    'background only';
+    onBack();
+  };
+
   return (
     <view className="header">
+      <view className="back-button" bindtap={handleBackPress}>
+        <text className="back-icon">←</text>
+      </view>
       <text className="header-title">TikTok Studio</text>
+      <view className="header-spacer" />
     </view>
   );
 };
@@ -134,13 +155,34 @@ const LiveTab = ({ isActive, onPress }: LiveTabProps) => {
 // Analytics Section Component
 interface AnalyticsSectionProps {
   onViewAll: () => void;
+  analyticsData: AnalyticsData | null;
 }
 
-const AnalyticsSection = ({ onViewAll }: AnalyticsSectionProps) => {
+const AnalyticsSection = ({ onViewAll, analyticsData }: AnalyticsSectionProps) => {
+  const handleCardPress = (event: any) => {
+    'main thread';
+    event.currentTarget.setStyleProperty('transform', 'scale(0.98)');
+    setTimeout(() => {
+      event.currentTarget.setStyleProperty('transform', 'scale(1)');
+    }, 150);
+  };
+
+  const handleCardTap = () => {
+    'background only';
+    onViewAll();
+  };
+
   return (
-    <view className="analytics-section">
-      <SectionHeader title="Analytics" onViewAll={onViewAll} />
-      <MetricsRow />
+    <view 
+      className="analytics-section-card"
+      main-thread:bindtap={handleCardPress}
+      bindtap={handleCardTap}
+    >
+      <view className="section-header">
+        <text className="section-title">Analytics</text>
+        <text className="view-all-link">View all ›</text>
+      </view>
+      <MetricsRow analyticsData={analyticsData} />
     </view>
   );
 };
@@ -179,104 +221,87 @@ const ViewAllLink = ({ onPress }: ViewAllLinkProps) => {
 };
 
 // Metrics Row Component
-const MetricsRow = () => {
+interface MetricsRowProps {
+  analyticsData: AnalyticsData | null;
+}
+
+const MetricsRow = ({ analyticsData }: MetricsRowProps) => {
   return (
     <view className="metrics-row">
-      <PostViewsCard />
-      <FollowersCard />
-      <LikesCard />
+      <PostViewsMetric data={analyticsData} />
+      <FollowersMetric data={analyticsData} />
+      <LikesMetric data={analyticsData} />
     </view>
   );
 };
 
-// Post Views Card Component
-const PostViewsCard = () => {
-  const handlePress = (event: any) => {
-    'main thread';
-    event.currentTarget.setStyleProperty('transform', 'scale(0.98)');
-    setTimeout(() => {
-      event.currentTarget.setStyleProperty('transform', 'scale(1)');
-    }, 150);
+// Post Views Metric Component (no card background)
+interface StudioMetricProps {
+  data: AnalyticsData | null;
+}
+
+const PostViewsMetric = ({ data }: StudioMetricProps) => {
+  const formatViews = (views: number) => {
+    if (views >= 1000000) return `${(views / 1000000).toFixed(1)}M`;
+    if (views >= 1000) return `${(views / 1000).toFixed(1)}K`;
+    return views.toString();
   };
 
-  const handleTap = () => {
-    'background only';
-    console.log('Post views tapped');
-  };
+  const views = data?.totalViews ?? 0;
+  const growth = data?.viewsGrowth ?? 0;
+  const isPositive = growth >= 0;
 
   return (
-    <view
-      className="analytics-card"
-      main-thread:bindtap={handlePress}
-      bindtap={handleTap}
-    >
-      <text className="metric-value">22.3K</text>
+    <view className="analytics-metric">
+      <text className="metric-value">{data ? formatViews(views) : '---'}</text>
       <text className="metric-label">Post views</text>
-      <view className="growth-indicator positive">
-        <text className="growth-icon">📈</text>
-        <text className="growth-text">72.6% 7d</text>
+      <view className={`growth-indicator ${isPositive ? 'positive' : 'negative'}`}>
+        <text className="growth-icon">{isPositive ? '📈' : '📉'}</text>
+        <text className="growth-text">
+          {data ? `${isPositive ? '+' : ''}${growth.toFixed(1)}% 7d` : '-- 7d'}
+        </text>
       </view>
     </view>
   );
 };
 
-// Followers Card Component
-const FollowersCard = () => {
-  const handlePress = (event: any) => {
-    'main thread';
-    event.currentTarget.setStyleProperty('transform', 'scale(0.98)');
-    setTimeout(() => {
-      event.currentTarget.setStyleProperty('transform', 'scale(1)');
-    }, 150);
-  };
-
-  const handleTap = () => {
-    'background only';
-    console.log('Net followers tapped');
-  };
-
+// Followers Metric Component (no card background)  
+const FollowersMetric = ({ data }: StudioMetricProps) => {
+  // Mock follower data since it's not in the analytics API
+  const followers = -2; // Static for now
+  const growth = 0;
+  
   return (
-    <view
-      className="analytics-card"
-      main-thread:bindtap={handlePress}
-      bindtap={handleTap}
-    >
-      <text className="metric-value">-2</text>
+    <view className="analytics-metric">
+      <text className="metric-value">{followers}</text>
       <text className="metric-label">Net followers</text>
       <view className="growth-indicator neutral">
         <text className="growth-icon">—</text>
-        <text className="growth-text">0% 7d</text>
+        <text className="growth-text">{growth}% 7d</text>
       </view>
     </view>
   );
 };
 
-// Likes Card Component
-const LikesCard = () => {
-  const handlePress = (event: any) => {
-    'main thread';
-    event.currentTarget.setStyleProperty('transform', 'scale(0.98)');
-    setTimeout(() => {
-      event.currentTarget.setStyleProperty('transform', 'scale(1)');
-    }, 150);
+// Likes Metric Component (no card background)
+const LikesMetric = ({ data }: StudioMetricProps) => {
+  const formatNumber = (num: number) => {
+    if (num >= 1000000) return `${(num / 1000000).toFixed(1)}M`;
+    if (num >= 1000) return `${(num / 1000).toFixed(1)}K`;
+    return num.toString();
   };
 
-  const handleTap = () => {
-    'background only';
-    console.log('Likes tapped');
-  };
-
+  // Calculate total likes from analytics data (if available)
+  const totalLikes = data?.totalViews ? Math.round(data.totalViews * (data.metrics.engagementRate / 100) * 0.7) : 0;
+  const growth = 159; // Mock growth for consistency
+  
   return (
-    <view
-      className="analytics-card"
-      main-thread:bindtap={handlePress}
-      bindtap={handleTap}
-    >
-      <text className="metric-value">1.9K</text>
+    <view className="analytics-metric">
+      <text className="metric-value">{data ? formatNumber(totalLikes) : '---'}</text>
       <text className="metric-label">Likes</text>
       <view className="growth-indicator positive">
         <text className="growth-icon">📈</text>
-        <text className="growth-text">159% 7d</text>
+        <text className="growth-text">{data ? `${growth}% 7d` : '-- 7d'}</text>
       </view>
     </view>
   );
@@ -285,11 +310,16 @@ const LikesCard = () => {
 // Tools Grid Component
 const ToolsGrid = () => {
   return (
-    <view className="tools-grid">
-      <AccountCheckTool />
-      <CreatorAcademyTool />
-      <PromoteTool />
-      <BenefitsTool />
+    <view className="tools-section-card">
+      <view className="section-header">
+        <text className="section-title">Tools</text>
+      </view>
+      <view className="tools-grid">
+        <AccountCheckTool />
+        <CreatorAcademyTool />
+        <PromoteTool />
+        <BenefitsTool />
+      </view>
     </view>
   );
 };
@@ -311,12 +341,12 @@ const AccountCheckTool = () => {
 
   return (
     <view
-      className="tool-card"
+      className="tool-item"
       main-thread:bindtap={handlePress}
       bindtap={handleTap}
     >
-      <view className="tool-icon-container green">
-        <text className="tool-icon">✓</text>
+      <view className="circular-icon-container green">
+        <text className="circular-icon">✓</text>
       </view>
       <text className="tool-label">Account check</text>
     </view>
@@ -340,12 +370,12 @@ const CreatorAcademyTool = () => {
 
   return (
     <view
-      className="tool-card"
+      className="tool-item"
       main-thread:bindtap={handlePress}
       bindtap={handleTap}
     >
-      <view className="tool-icon-container yellow">
-        <text className="tool-icon">🎓</text>
+      <view className="circular-icon-container yellow">
+        <text className="circular-icon">🎓</text>
       </view>
       <text className="tool-label">Creator Academy</text>
     </view>
@@ -369,12 +399,12 @@ const PromoteTool = () => {
 
   return (
     <view
-      className="tool-card"
+      className="tool-item"
       main-thread:bindtap={handlePress}
       bindtap={handleTap}
     >
-      <view className="tool-icon-container blue">
-        <text className="tool-icon">↗️</text>
+      <view className="circular-icon-container blue">
+        <text className="circular-icon">↗</text>
       </view>
       <text className="tool-label">Promote</text>
     </view>
@@ -398,12 +428,12 @@ const BenefitsTool = () => {
 
   return (
     <view
-      className="tool-card"
+      className="tool-item"
       main-thread:bindtap={handlePress}
       bindtap={handleTap}
     >
-      <view className="tool-icon-container pink">
-        <text className="tool-icon">🎁</text>
+      <view className="circular-icon-container pink">
+        <text className="circular-icon">🎁</text>
       </view>
       <text className="tool-label">Benefits</text>
     </view>
@@ -413,8 +443,12 @@ const BenefitsTool = () => {
 // Finance Section Component
 const FinanceSection = () => {
   return (
-    <view className="finance-section">
+    <view className="finance-section-card">
+      <view className="section-header">
+        <text className="section-title">Finance</text>
+      </view>
       <BalanceRow />
+      <view className="finance-divider" />
       <RewardsRow />
     </view>
   );
@@ -426,7 +460,7 @@ const BalanceRow = () => {
     'main thread';
     event.currentTarget.setStyleProperty('background-color', '#374151');
     setTimeout(() => {
-      event.currentTarget.setStyleProperty('background-color', '#1f2937');
+      event.currentTarget.setStyleProperty('background-color', 'transparent');
     }, 150);
   };
 
@@ -437,7 +471,7 @@ const BalanceRow = () => {
 
   return (
     <view
-      className="finance-row"
+      className="finance-row-item"
       main-thread:bindtap={handlePress}
       bindtap={handleTap}
     >
@@ -456,7 +490,7 @@ const RewardsRow = () => {
     'main thread';
     event.currentTarget.setStyleProperty('background-color', '#374151');
     setTimeout(() => {
-      event.currentTarget.setStyleProperty('background-color', '#1f2937');
+      event.currentTarget.setStyleProperty('background-color', 'transparent');
     }, 150);
   };
 
@@ -467,7 +501,7 @@ const RewardsRow = () => {
 
   return (
     <view
-      className="finance-row"
+      className="finance-row-item"
       main-thread:bindtap={handlePress}
       bindtap={handleTap}
     >
@@ -491,9 +525,17 @@ interface MonetizationSectionProps {
 }
 
 const MonetizationSection = ({ onViewAll }: MonetizationSectionProps) => {
+  const handleViewAll = () => {
+    'background only';
+    onViewAll();
+  };
+
   return (
-    <view className="monetization-section">
-      <SectionHeader title="Monetization Programs" onViewAll={onViewAll} />
+    <view className="monetization-section-card">
+      <view className="section-header">
+        <text className="section-title">Monetization Programs</text>
+        <text className="view-all-link" bindtap={handleViewAll}>View all ›</text>
+      </view>
       <ProgramsGrid />
     </view>
   );
@@ -528,12 +570,12 @@ const TikTokShopProgram = () => {
 
   return (
     <view
-      className="monetization-card"
+      className="monetization-item"
       main-thread:bindtap={handlePress}
       bindtap={handleTap}
     >
-      <view className="monetization-icon-container red">
-        <text className="monetization-icon">🛒</text>
+      <view className="circular-icon-container red">
+        <text className="circular-icon">🛒</text>
       </view>
       <text className="monetization-label">TikTok Shop</text>
     </view>
@@ -557,12 +599,12 @@ const ServicePlusProgram = () => {
 
   return (
     <view
-      className="monetization-card"
+      className="monetization-item"
       main-thread:bindtap={handlePress}
       bindtap={handleTap}
     >
-      <view className="monetization-icon-container purple">
-        <text className="monetization-icon">🎧</text>
+      <view className="circular-icon-container purple">
+        <text className="circular-icon">🎧</text>
       </view>
       <text className="monetization-label">Service+</text>
     </view>
@@ -586,12 +628,12 @@ const SubscriptionProgram = () => {
 
   return (
     <view
-      className="monetization-card"
+      className="monetization-item"
       main-thread:bindtap={handlePress}
       bindtap={handleTap}
     >
-      <view className="monetization-icon-container cyan">
-        <text className="monetization-icon">👥</text>
+      <view className="circular-icon-container cyan">
+        <text className="circular-icon">👥</text>
       </view>
       <text className="monetization-label">Subscription</text>
     </view>
@@ -615,12 +657,12 @@ const LiveIncentiveProgram = () => {
 
   return (
     <view
-      className="monetization-card"
+      className="monetization-item"
       main-thread:bindtap={handlePress}
       bindtap={handleTap}
     >
-      <view className="monetization-icon-container yellow">
-        <text className="monetization-icon">⚡</text>
+      <view className="circular-icon-container yellow">
+        <text className="circular-icon">⚡</text>
       </view>
       <text className="monetization-label">LIVE Incentive Program</text>
     </view>

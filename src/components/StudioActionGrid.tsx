@@ -1,5 +1,5 @@
 // src/components/StudioActionGridLight.tsx
-import * as React from 'react';
+import type * as React from 'react';
 
 interface ActionItem {
   id: string;

@@ -1,20 +1,21 @@
 // src/components/ForYouPage.tsx
-import * as React from 'react';
+
 import { useState } from '@lynx-js/react';
-import { BottomNavigation } from './BottomNavigation.js';
-import { InteractiveButton } from './InteractiveButton.js';
-import { CommentModal } from './CommentModal.js';
-import { ShareModal } from './ShareModal.js';
-import { MusicDisc } from './MusicDisc.js';
-import { UserProfile } from './UserProfile.js';
-import userProfileImageUrl from '../assets/user-profile.png';
+import type * as React from 'react';
 import backgroundImageUrl from '../assets/background.png';
+import commentIconUrl from '../assets/comment-icon.png';
+import searchIconUrl from '../assets/discover-icon.png';
 import heartIconUrl from '../assets/like-icon.png';
 import heartActiveIconUrl from '../assets/liked-icon.png';
-import commentIconUrl from '../assets/comment-icon.png';
-import shareIconUrl from '../assets/share-icon.png';
 import liveIconUrl from '../assets/live-icon.png';
-import searchIconUrl from '../assets/discover-icon.png';
+import shareIconUrl from '../assets/share-icon.png';
+import userProfileImageUrl from '../assets/user-profile.png';
+import { BottomNavigation } from './BottomNavigation.js';
+import { CommentModal } from './CommentModal.js';
+import { InteractiveButton } from './InteractiveButton.js';
+import { MusicDisc } from './MusicDisc.js';
+import { ShareModal } from './ShareModal.js';
+import { UserProfile } from './UserProfile.js';
 
 type TabType = 'home' | 'discover' | 'create' | 'inbox' | 'profile';
 
@@ -23,7 +24,10 @@ interface ForYouPageProps {
   onTabChange: (tab: TabType) => void;
 }
 
-export const ForYouPage: React.FC<ForYouPageProps> = ({ activeTab, onTabChange }) => {
+export const ForYouPage: React.FC<ForYouPageProps> = ({
+  activeTab,
+  onTabChange,
+}) => {
   const [isLiked, setIsLiked] = useState(false);
   const [isFollowing, setIsFollowing] = useState(false);
   const [showComments, setShowComments] = useState(false);
@@ -33,17 +37,17 @@ export const ForYouPage: React.FC<ForYouPageProps> = ({ activeTab, onTabChange }
   const [commentCount, setCommentCount] = useState(579);
 
   const videoData = {
-    username: "@karennne",
-    description: "#avicii #wflove",
-    music: "♪ Avicii - Waiting For Love (ft.",
-    timestamp: "1:28"
+    username: '@karennne',
+    description: '#avicii #wflove',
+    music: '♪ Avicii - Waiting For Love (ft.',
+    timestamp: '1:28',
   };
 
   const handleLike = () => {
     'background only';
     const newIsLiked = !isLiked;
     setIsLiked(newIsLiked);
-    setLikeCount(prev => newIsLiked ? prev + 1 : prev - 1);
+    setLikeCount((prev) => (newIsLiked ? prev + 1 : prev - 1));
   };
 
   const handleFollow = () => {
@@ -95,67 +99,77 @@ export const ForYouPage: React.FC<ForYouPageProps> = ({ activeTab, onTabChange }
       />
 
       {/* Safe area container */}
-      <view style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, paddingTop: '44px' }}>
-        
-  {/* Top Navigation Bar */}
-  <view
-    style={{
-      position: "absolute",
-      top: "50px",   // push below safe area
-      width: "100%",
-      display: "flex",
-      flexDirection: "row",
-      justifyContent: "space-between",
-      alignItems: "center",
-      paddingLeft: "30px",
-      paddingRight: "30px",
-    }}
-  >
-    {/* Left: Live Icon */}
-    <image
-      src={liveIconUrl}
-      style={{ width: "20px", height: "20px" }}
-    />
-
-    {/* Middle: Tabs */}
-    <view
-      style={{
-        display: "flex",
-        flexDirection: "row",
-        columnGap: "15px",
-      }}
-    >
-    {["STEM", "Explore", "Friends", "Following", "For You"].map((tab, i) => (
-      <text
-        key={tab}
+      <view
         style={{
-          color: tab === "For You" ? "white" : "rgba(255,255,255,0.6)",
-          fontSize: "12px",
-          fontWeight: tab === "For You" ? "bold" : "normal",
+          position: 'absolute',
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          paddingTop: '44px',
         }}
       >
-        {tab}
-      </text>
-    ))}
-    </view>
+        {/* Top Navigation Bar */}
+        <view
+          style={{
+            position: 'absolute',
+            top: '50px', // push below safe area
+            width: '100%',
+            display: 'flex',
+            flexDirection: 'row',
+            justifyContent: 'space-between',
+            alignItems: 'center',
+            paddingLeft: '30px',
+            paddingRight: '30px',
+          }}
+        >
+          {/* Left: Live Icon */}
+          <image src={liveIconUrl} style={{ width: '20px', height: '20px' }} />
 
-    {/* Right: Search Icon */}
-    <image
-      src={searchIconUrl}
-      style={{ width: "20px", height: "20px" }}
-    />
-  </view>
+          {/* Middle: Tabs */}
+          <view
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
+              columnGap: '15px',
+            }}
+          >
+            {['STEM', 'Explore', 'Friends', 'Following', 'For You'].map(
+              (tab, i) => (
+                <text
+                  key={tab}
+                  style={{
+                    color:
+                      tab === 'For You' ? 'white' : 'rgba(255,255,255,0.6)',
+                    fontSize: '12px',
+                    fontWeight: tab === 'For You' ? 'bold' : 'normal',
+                  }}
+                >
+                  {tab}
+                </text>
+              ),
+            )}
+          </view>
+
+          {/* Right: Search Icon */}
+          <image
+            src={searchIconUrl}
+            style={{ width: '20px', height: '20px' }}
+          />
+        </view>
 
         {/* Right Action Bar */}
-        <view style={{ 
-          position: 'absolute', 
-          bottom: '100px', 
-          right: '12px', 
-          alignItems: 'center',
-          display: 'flex',
-          flexDirection: 'column',
-          gap: '20px'
-        }}>
+        <view
+          style={{
+            position: 'absolute',
+            bottom: '100px',
+            right: '12px',
+            alignItems: 'center',
+            display: 'flex',
+            flexDirection: 'column',
+            gap: '20px',
+          }}
+        >
           {/* User Profile */}
           <UserProfile
             username={videoData.username}
@@ -212,26 +226,62 @@ export const ForYouPage: React.FC<ForYouPageProps> = ({ activeTab, onTabChange }
         </view>
 
         {/* Bottom Info Panel */}
-        <view style={{ position: 'absolute', bottom: '100px', left: '16px', right: '80px' }}>
-          <text style={{ color: 'white', fontSize: '18px', fontWeight: 'bold', marginBottom: '10px' }}>
+        <view
+          style={{
+            position: 'absolute',
+            bottom: '100px',
+            left: '16px',
+            right: '80px',
+          }}
+        >
+          <text
+            style={{
+              color: 'white',
+              fontSize: '18px',
+              fontWeight: 'bold',
+              marginBottom: '10px',
+            }}
+          >
             {videoData.username} • {videoData.timestamp}
           </text>
-          <text style={{ color: 'white', fontSize: '16px', lineHeight: '22px', marginBottom: '14px', fontStyle: 'italic' }}>
+          <text
+            style={{
+              color: 'white',
+              fontSize: '16px',
+              lineHeight: '22px',
+              marginBottom: '14px',
+              fontStyle: 'italic',
+            }}
+          >
             {videoData.description}
           </text>
-          <view style={{ display: 'flex', flexDirection: 'row', alignItems: 'center' }}>
-            <view style={{
-              width: '16px',
-              height: '16px',
-              borderRadius: '8px',
-              backgroundColor: '#333',
-              justifyContent: 'center',
+          <view
+            style={{
+              display: 'flex',
+              flexDirection: 'row',
               alignItems: 'center',
-              marginRight: '8px'
-            }}>
+            }}
+          >
+            <view
+              style={{
+                width: '16px',
+                height: '16px',
+                borderRadius: '8px',
+                backgroundColor: '#333',
+                justifyContent: 'center',
+                alignItems: 'center',
+                marginRight: '8px',
+              }}
+            >
               <text style={{ color: 'white', fontSize: '10px' }}>♪</text>
             </view>
-            <text style={{ color: 'white', fontSize: '15px', fontFamily: 'monospace' }}>
+            <text
+              style={{
+                color: 'white',
+                fontSize: '15px',
+                fontFamily: 'monospace',
+              }}
+            >
               {videoData.music}
             </text>
           </view>

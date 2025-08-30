@@ -1,6 +1,7 @@
 // src/components/ProfileStats.tsx
-import * as React from 'react';
+
 import { useState } from '@lynx-js/react';
+import type * as React from 'react';
 
 interface StatItemProps {
   count: number;
@@ -39,29 +40,33 @@ const StatItem: React.FC<StatItemProps> = ({ count, label, onPress }) => {
   };
 
   return (
-    <view 
-      style={{ 
+    <view
+      style={{
         alignItems: 'center',
         opacity: isPressed ? 0.7 : 1,
         transform: isPressed ? 'scale(0.95)' : 'scale(1)',
-        transition: 'all 0.1s ease'
+        transition: 'all 0.1s ease',
       }}
       bindtap={handlePress}
       main-thread:bindtouchstart={handlePressStart}
       main-thread:bindtouchend={handlePressEnd}
     >
-      <text style={{ 
-        fontSize: '18px', 
-        fontWeight: 'bold', 
-        color: '#000',
-        marginBottom: '4px'
-      }}>
+      <text
+        style={{
+          fontSize: '18px',
+          fontWeight: 'bold',
+          color: '#000',
+          marginBottom: '4px',
+        }}
+      >
         {count}
       </text>
-      <text style={{ 
-        fontSize: '14px', 
-        color: '#666'
-      }}>
+      <text
+        style={{
+          fontSize: '14px',
+          color: '#666',
+        }}
+      >
         {label}
       </text>
     </view>
@@ -75,33 +80,31 @@ export const ProfileStats: React.FC<ProfileStatsProps> = ({
   onFollowingPress,
   onFollowersPress,
   onLikesPress,
-  style = {}
+  style = {},
 }) => {
   return (
-    <view style={{
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      width: '100%',
-      paddingLeft: '40px',
-      paddingRight: '40px',
-      ...style
-    }}>
-      <StatItem 
-        count={following} 
-        label="Following" 
+    <view
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        width: '100%',
+        paddingLeft: '40px',
+        paddingRight: '40px',
+        ...style,
+      }}
+    >
+      <StatItem
+        count={following}
+        label="Following"
         onPress={onFollowingPress}
       />
-      <StatItem 
-        count={followers} 
-        label="Followers" 
+      <StatItem
+        count={followers}
+        label="Followers"
         onPress={onFollowersPress}
       />
-      <StatItem 
-        count={likes} 
-        label="Likes" 
-        onPress={onLikesPress}
-      />
+      <StatItem count={likes} label="Likes" onPress={onLikesPress} />
     </view>
   );
 };

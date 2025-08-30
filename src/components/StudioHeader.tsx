@@ -1,5 +1,5 @@
 // src/components/StudioHeaderLight.tsx
-import * as React from 'react';
+import type * as React from 'react';
 
 interface StudioHeaderLightProps {
   onBack: () => void;
@@ -23,7 +23,7 @@ export const StudioHeaderLight: React.FC<StudioHeaderLightProps> = ({
         paddingLeft: '16px',
         paddingRight: '16px',
         paddingTop: '44px',
-        borderBottomWidth: '0px'
+        borderBottomWidth: '0px',
       }}
     >
       {/* Back Button */}

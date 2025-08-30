@@ -1,18 +1,18 @@
 /** @jsxImportSource @lynx-js/react */
 // src/components/BottomNavigation.tsx
 
+import accountIconUrl from '../assets/account-icon.png';
+import accountActiveIconUrl from '../assets/account-icon-active.png';
+import addIconUrl from '../assets/add-icon.png';
+import discoverActiveIconUrl from '../assets/discover-icon-active.png';
 // (No need for: import * as React from 'react')
 import homeIconUrl from '../assets/home-icon.png';
-import discoverIconUrl from '../assets/shop-icon.png';
-import addIconUrl from '../assets/add-icon.png';
-import inboxIconUrl from '../assets/inbox-icon.png';
-import accountIconUrl from '../assets/account-icon.png';
 
 // Active state icons
 import homeActiveIconUrl from '../assets/home-icon-active.png';
-import discoverActiveIconUrl from '../assets/discover-icon-active.png';
+import inboxIconUrl from '../assets/inbox-icon.png';
 import inboxActiveIconUrl from '../assets/inbox-icon-active.png';
-import accountActiveIconUrl from '../assets/account-icon-active.png';
+import discoverIconUrl from '../assets/shop-icon.png';
 
 export type TabType = 'home' | 'discover' | 'create' | 'inbox' | 'profile';
 
@@ -34,13 +34,37 @@ const Icon = ({ src, style }: { src: string; style?: Record<string, any> }) => (
   <image src={src} style={style} />
 );
 
-export function BottomNavigation({ activeTab, onTabChange, onTabPress }: BottomNavigationProps) {
+export function BottomNavigation({
+  activeTab,
+  onTabChange,
+  onTabPress,
+}: BottomNavigationProps) {
   const tabs: Tab[] = [
-    { id: 'home',     icon: homeIconUrl,     activeIcon: homeActiveIconUrl,       label: 'Home'    },
-    { id: 'discover', icon: discoverIconUrl, activeIcon: discoverActiveIconUrl,   label: 'Shop'    },
-    { id: 'create',   icon: addIconUrl,      activeIcon: addIconUrl,              label: ''        },
-    { id: 'inbox',    icon: inboxIconUrl,    activeIcon: inboxActiveIconUrl,      label: 'Inbox'   },
-    { id: 'profile',  icon: accountIconUrl,  activeIcon: accountActiveIconUrl,    label: 'Profile' },
+    {
+      id: 'home',
+      icon: homeIconUrl,
+      activeIcon: homeActiveIconUrl,
+      label: 'Home',
+    },
+    {
+      id: 'discover',
+      icon: discoverIconUrl,
+      activeIcon: discoverActiveIconUrl,
+      label: 'Shop',
+    },
+    { id: 'create', icon: addIconUrl, activeIcon: addIconUrl, label: '' },
+    {
+      id: 'inbox',
+      icon: inboxIconUrl,
+      activeIcon: inboxActiveIconUrl,
+      label: 'Inbox',
+    },
+    {
+      id: 'profile',
+      icon: accountIconUrl,
+      activeIcon: accountActiveIconUrl,
+      label: 'Profile',
+    },
   ];
 
   const handleTap = (tab: TabType) => {
@@ -51,21 +75,23 @@ export function BottomNavigation({ activeTab, onTabChange, onTabPress }: BottomN
   };
 
   return (
-    <view style={{
-      position: 'absolute',
-      bottom: 0,
-      left: 0,
-      right: 0,
-      width: '100%',
-      height: '83px',
-      backgroundColor: 'black',
-      borderTop: '1px solid #262626',
-      display: 'flex',
-      flexDirection: 'row',
-      justifyContent: 'space-around',
-      alignItems: 'center',
-      zIndex: 10
-    }}>
+    <view
+      style={{
+        position: 'absolute',
+        bottom: 0,
+        left: 0,
+        right: 0,
+        width: '100%',
+        height: '83px',
+        backgroundColor: 'black',
+        borderTop: '1px solid #262626',
+        display: 'flex',
+        flexDirection: 'row',
+        justifyContent: 'space-around',
+        alignItems: 'center',
+        zIndex: 10,
+      }}
+    >
       {tabs.map((tab) => {
         const isActive = activeTab === tab.id;
         return (
@@ -76,38 +102,42 @@ export function BottomNavigation({ activeTab, onTabChange, onTabPress }: BottomN
               display: 'flex',
               flexDirection: 'column',
               alignItems: 'center',
-              position: 'relative'
+              position: 'relative',
             }}
             bindtap={() => handleTap(tab.id)}
           >
             {/* Active indicator dot (not for create) */}
             {isActive && tab.id !== 'create' && (
-              <view style={{
-                position: 'absolute',
-                top: '-2px',
-                width: '4px',
-                height: '4px',
-                borderRadius: '2px',
-                backgroundColor: '#FE2C55'
-              }} />
+              <view
+                style={{
+                  position: 'absolute',
+                  top: '-2px',
+                  width: '4px',
+                  height: '4px',
+                  borderRadius: '2px',
+                  backgroundColor: '#FE2C55',
+                }}
+              />
             )}
 
             <Icon
               src={isActive && tab.activeIcon ? tab.activeIcon : tab.icon}
               style={{
-                width:  tab.id === 'create' ? '43px' : '23px',
+                width: tab.id === 'create' ? '43px' : '23px',
                 height: tab.id === 'create' ? '28px' : '21px',
-                opacity: isActive || tab.id === 'create' ? 1 : 0.6
+                opacity: isActive || tab.id === 'create' ? 1 : 0.6,
               }}
             />
 
             {!!tab.label && (
-              <text style={{
-                color: isActive ? 'white' : 'rgba(255,255,255,0.6)',
-                fontSize: '10px',
-                marginTop: '5px',
-                fontWeight: isActive ? '600' : '400'
-              }}>
+              <text
+                style={{
+                  color: isActive ? 'white' : 'rgba(255,255,255,0.6)',
+                  fontSize: '10px',
+                  marginTop: '5px',
+                  fontWeight: isActive ? '600' : '400',
+                }}
+              >
                 {tab.label}
               </text>
             )}

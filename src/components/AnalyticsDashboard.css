@@ -2,22 +2,22 @@
 .analytics-dashboard {
   display: flex;
   flex-direction: column;
-  background: #111827;
+  background: #000000;
   min-height: 100vh;
   color: white;
-  max-width: 375px;
-  margin: 0 auto;
+  width: 100%;
 }
 
 .main-content {
   flex: 1;
-  padding: 16px;
+  padding: 16px 0;
+  background: #000000;
 }
 
 /* Header Styles - 64px height, dark background */
 .analytics-header {
   height: 64px;
-  background: #1f2937;
+  background: #000000;
   display: flex;
   align-items: center;
   padding: 0 16px;
@@ -54,7 +54,7 @@
 .tab-navigation {
   height: 48px;
   display: flex;
-  background: #1f2937;
+  background: #000000;
   border-bottom: 1px solid #374151;
 }
 
@@ -87,7 +87,7 @@
 /* Time Filter */
 .time-filter {
   padding: 16px;
-  background: #111827;
+  background: #000000;
 }
 
 .filter-button {
@@ -155,7 +155,7 @@
   background: #1f2937;
   border-radius: 12px;
   padding: 20px;
-  margin-bottom: 24px;
+  margin: 0 16px 24px 16px;
 }
 
 .chart-title {
@@ -215,10 +215,11 @@
 
 @keyframes slideUpViews {
   from {
-    height: 0;
+    transform: scaleY(0);
     opacity: 0;
   }
   to {
+    transform: scaleY(1);
     opacity: 1;
   }
 }
@@ -257,6 +258,7 @@
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 16px;
+  padding: 0 16px;
 }
 
 .metric-card {
@@ -328,22 +330,69 @@
   .analytics-dashboard {
     max-width: 320px;
   }
-  
+
   .metrics-grid {
     gap: 12px;
   }
-  
+
   .metric-card {
     padding: 16px;
   }
-  
+
   .total-value {
     font-size: 40px;
   }
-  
+
   .chart-bars {
     gap: 6px;
   }
+}
+
+/* Time Filter Dropdown */
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  background: #1f2937;
+  border: 1px solid #374151;
+  border-radius: 6px;
+  margin-top: 4px;
+  z-index: 1000;
+  max-height: 200px;
+  overflow-y: auto;
+}
+
+.dropdown-item {
+  padding: 12px 16px;
+  border-bottom: 1px solid #374151;
+  transition: background-color 0.2s ease;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background-color: #374151;
+}
+
+.dropdown-item.selected {
+  background-color: #3b82f6;
+}
+
+.dropdown-text {
+  color: #ffffff;
+  font-size: 14px;
+}
+
+.dropdown-item.selected .dropdown-text {
+  color: #ffffff;
+  font-weight: 500;
+}
+
+.time-filter {
+  position: relative;
 }
 
 /* Accessibility */
@@ -351,7 +400,8 @@
 .tab-item:focus,
 .filter-button:focus,
 .total-views-section:focus,
-.metric-card:focus {
+.metric-card:focus,
+.dropdown-item:focus {
   outline: 2px solid #3b82f6;
 }
 
@@ -399,10 +449,11 @@
 
 @keyframes slideUpRevenue {
   from {
-    height: 0;
+    transform: scaleY(0);
     opacity: 0;
   }
   to {
+    transform: scaleY(1);
     opacity: 1;
   }
 }
@@ -566,5 +617,192 @@
   }
   100% {
     background-position: 200% 0;
+  }
+}
+
+/* CSS-Based Chart Styles */
+.css-chart-section {
+  background: #374151;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 16px;
+}
+
+.css-chart-container {
+  display: flex;
+  height: 200px;
+  margin: 20px 0;
+}
+
+.css-y-axis {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 40px;
+  padding-right: 10px;
+  height: 100%;
+}
+
+.css-chart-grid {
+  display: flex;
+  flex: 1;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 100%;
+  gap: 4px;
+}
+
+.css-bar-column {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  height: 100%;
+  align-items: center;
+}
+
+.css-bar-spacer {
+  width: 100%;
+}
+
+.css-bar {
+  width: 100%;
+  max-width: 24px;
+  border-radius: 4px 4px 0 0;
+  animation: cssBarGrow 0.8s ease-out forwards;
+  transform-origin: bottom;
+}
+
+.css-bar-views {
+  background: linear-gradient(180deg, #10b981 0%, #059669 100%);
+}
+
+.css-bar-revenue {
+  background: linear-gradient(180deg, #fbbf24 0%, #f59e0b 100%);
+}
+
+.css-bar-label {
+  color: #9ca3af;
+  font-size: 12px;
+  margin-top: 8px;
+  text-align: center;
+}
+
+.css-chart-legend {
+  display: flex;
+  justify-content: center;
+  margin-top: 10px;
+}
+
+.css-legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.css-legend-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+}
+
+.css-legend-views {
+  background: #10b981;
+}
+
+.css-legend-revenue {
+  background: #fbbf24;
+}
+
+.css-legend-text {
+  color: #9ca3af;
+  font-size: 14px;
+}
+
+@keyframes cssBarGrow {
+  from {
+    transform: scaleY(0);
+    opacity: 0;
+  }
+  to {
+    transform: scaleY(1);
+    opacity: 1;
+  }
+}
+
+/* Alternative: SVG-like approach using CSS borders */
+.css-chart-alternative {
+  background: #374151;
+  border-radius: 12px;
+  padding: 20px;
+  margin: 16px;
+}
+
+.css-bars-container {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  height: 160px;
+  padding: 20px 0;
+  border-left: 2px solid #4b5563;
+  border-bottom: 2px solid #4b5563;
+  margin: 20px 0;
+  position: relative;
+}
+
+.css-bars-container::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 33%;
+  right: 0;
+  height: 1px;
+  background: #4b5563;
+  opacity: 0.3;
+}
+
+.css-bars-container::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 66%;
+  right: 0;
+  height: 1px;
+  background: #4b5563;
+  opacity: 0.3;
+}
+
+.css-simple-bar {
+  flex: 1;
+  margin: 0 2px;
+  border-radius: 2px 2px 0 0;
+  min-height: 4px;
+  animation: cssSimpleGrow 0.6s ease-out forwards;
+  transform-origin: bottom;
+}
+
+.css-simple-bar-views {
+  background: #10b981;
+}
+
+.css-simple-bar-revenue {
+  background: #fbbf24;
+}
+
+@keyframes cssSimpleGrow {
+  from {
+    height: 0;
+  }
+  to {
+    /* Height will be set inline */
+  }
+}/* 
+Lynx Chart Animation */
+@keyframes slideUp {
+  from {
+    height: 0%;
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }

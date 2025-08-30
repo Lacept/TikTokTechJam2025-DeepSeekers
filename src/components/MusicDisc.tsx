@@ -1,6 +1,7 @@
 // src/components/MusicDisc.tsx
-import * as React from 'react';
-import { useState, useEffect } from '@lynx-js/react';
+
+import { useEffect, useState } from '@lynx-js/react';
+import type * as React from 'react';
 
 interface MusicDiscProps {
   isPlaying?: boolean;

@@ -1,6 +1,7 @@
 // src/components/InteractiveButton.tsx
-import * as React from 'react';
+
 import { useState } from '@lynx-js/react';
+import type * as React from 'react';
 
 interface InteractiveButtonProps {
   icon: string;
@@ -23,14 +24,32 @@ export const InteractiveButton: React.FC<InteractiveButtonProps> = ({
   inactiveColor = 'white',
   onPress,
   size = 'medium',
-  style = {}
+  style = {},
 }) => {
   const [isPressed, setIsPressed] = useState(false);
 
   const sizeConfig = {
-    small: { width: '40px', height: '40px', fontSize: '18px', textSize: '10px', iconSize: '20px' },
-    medium: { width: '48px', height: '48px', fontSize: '24px', textSize: '12px', iconSize: '24px' },
-    large: { width: '56px', height: '56px', fontSize: '28px', textSize: '14px', iconSize: '45px' }
+    small: {
+      width: '40px',
+      height: '40px',
+      fontSize: '18px',
+      textSize: '10px',
+      iconSize: '20px',
+    },
+    medium: {
+      width: '48px',
+      height: '48px',
+      fontSize: '24px',
+      textSize: '12px',
+      iconSize: '24px',
+    },
+    large: {
+      width: '56px',
+      height: '56px',
+      fontSize: '28px',
+      textSize: '14px',
+      iconSize: '45px',
+    },
   };
 
   const config = sizeConfig[size];
@@ -51,50 +70,52 @@ export const InteractiveButton: React.FC<InteractiveButtonProps> = ({
 
   return (
     <view style={{ alignItems: 'center', width: config.width, ...style }}>
-      <view 
+      <view
         style={{
           width: config.width,
           height: config.height,
           borderRadius: '24px',
-          backgroundColor: isPressed 
-            ? 'rgba(255,255,255,0.1)' 
-            : 'transparent',
+          backgroundColor: isPressed ? 'rgba(255,255,255,0.1)' : 'transparent',
           justifyContent: 'center',
           alignItems: 'center',
           marginBottom: '6px',
           transform: isPressed ? 'scale(0.95)' : 'scale(1)',
           transition: 'all 0.1s ease',
-          overflow: 'hidden'
+          overflow: 'hidden',
         }}
         bindtap={handlePress}
       >
         {isImageIcon(currentIcon) ? (
-          <image 
+          <image
             src={currentIcon}
-            style={{ 
+            style={{
               width: config.iconSize,
               height: config.iconSize,
-              opacity: isActive ? 1 : 0.9
+              opacity: isActive ? 1 : 0.9,
             }}
           />
         ) : (
-          <text style={{ 
-            color: isActive ? activeColor : inactiveColor, 
-            fontSize: config.fontSize,
-            fontWeight: isActive ? 'bold' : 'normal'
-          }}>
+          <text
+            style={{
+              color: isActive ? activeColor : inactiveColor,
+              fontSize: config.fontSize,
+              fontWeight: isActive ? 'bold' : 'normal',
+            }}
+          >
             {currentIcon}
           </text>
         )}
       </view>
-      <text style={{ 
-        color: 'white', 
-        fontSize: config.textSize, 
-        fontWeight: 'bold',
-        textAlign: 'center',
-        width: config.width,
-        overflow: 'hidden'
-      }}>
+      <text
+        style={{
+          color: 'white',
+          fontSize: config.textSize,
+          fontWeight: 'bold',
+          textAlign: 'center',
+          width: config.width,
+          overflow: 'hidden',
+        }}
+      >
         {count}
       </text>
     </view>

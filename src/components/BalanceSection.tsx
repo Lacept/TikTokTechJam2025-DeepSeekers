@@ -1,5 +1,5 @@
 // src/components/BalanceSectionLight.tsx
-import * as React from 'react';
+import type * as React from 'react';
 
 export const BalanceSectionLight: React.FC = () => {
   const handleBalancePress = () => {

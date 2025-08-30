@@ -1,6 +1,7 @@
 // src/components/ProfileActionButtons.tsx
-import * as React from 'react';
+
 import { useState } from '@lynx-js/react';
+import type * as React from 'react';
 
 interface ProfileActionButtonsProps {
   onEditProfile?: () => void;
@@ -11,7 +12,7 @@ interface ProfileActionButtonsProps {
 export const ProfileActionButtons: React.FC<ProfileActionButtonsProps> = ({
   onEditProfile,
   onBookmark,
-  style = {}
+  style = {},
 }) => {
   const [isPressed, setIsPressed] = useState<'edit' | 'bookmark' | null>(null);
 
@@ -40,15 +41,17 @@ export const ProfileActionButtons: React.FC<ProfileActionButtonsProps> = ({
   };
 
   return (
-    <view style={{
-      display: 'flex',
-      flexDirection: 'row',
-      width: '100%',
-      columnGap: '12px',
-      ...style
-    }}>
+    <view
+      style={{
+        display: 'flex',
+        flexDirection: 'row',
+        width: '100%',
+        columnGap: '12px',
+        ...style,
+      }}
+    >
       {/* Edit Profile Button */}
-      <view 
+      <view
         style={{
           flex: 1,
           height: '36px',
@@ -57,23 +60,25 @@ export const ProfileActionButtons: React.FC<ProfileActionButtonsProps> = ({
           justifyContent: 'center',
           alignItems: 'center',
           transform: isPressed === 'edit' ? 'scale(0.98)' : 'scale(1)',
-          transition: 'all 0.1s ease'
+          transition: 'all 0.1s ease',
         }}
         bindtap={handleEditProfile}
         main-thread:bindtouchstart={() => handlePressStart('edit')}
         main-thread:bindtouchend={handlePressEnd}
       >
-        <text style={{ 
-          fontSize: '14px', 
-          fontWeight: '600', 
-          color: '#333' 
-        }}>
+        <text
+          style={{
+            fontSize: '14px',
+            fontWeight: '600',
+            color: '#333',
+          }}
+        >
           Edit profile
         </text>
       </view>
 
       {/* Bookmark Button */}
-      <view 
+      <view
         style={{
           width: '36px',
           height: '36px',
@@ -82,7 +87,7 @@ export const ProfileActionButtons: React.FC<ProfileActionButtonsProps> = ({
           justifyContent: 'center',
           alignItems: 'center',
           transform: isPressed === 'bookmark' ? 'scale(0.95)' : 'scale(1)',
-          transition: 'all 0.1s ease'
+          transition: 'all 0.1s ease',
         }}
         bindtap={handleBookmark}
         main-thread:bindtouchstart={() => handlePressStart('bookmark')}

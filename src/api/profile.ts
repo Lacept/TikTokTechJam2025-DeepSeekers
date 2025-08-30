@@ -9,8 +9,8 @@
 
 let __API_BASE_INTERNAL: string | null = null;
 
-export function setApiBase(hostname: string, protocol: string = "http:") {
-  const proto = protocol.endsWith(":") ? protocol : `${protocol}:`;
+export function setApiBase(hostname: string, protocol: string = 'http:') {
+  const proto = protocol.endsWith(':') ? protocol : `${protocol}:`;
   __API_BASE_INTERNAL = `${proto}//${hostname}:5000`;
   try {
     (globalThis as any).__API_BASE__ = __API_BASE_INTERNAL;
@@ -19,7 +19,7 @@ export function setApiBase(hostname: string, protocol: string = "http:") {
 
 function readQueryParam(name: string): string | null {
   try {
-    if (typeof window === "undefined" || !window.location?.search) return null;
+    if (typeof window === 'undefined' || !window.location?.search) return null;
     const sp = new URLSearchParams(window.location.search);
     const v = sp.get(name);
     return v && v.trim() ? v.trim() : null;
@@ -30,7 +30,7 @@ function readQueryParam(name: string): string | null {
 
 function readLocalStorage(key: string): string | null {
   try {
-    if (typeof window === "undefined" || !window.localStorage) return null;
+    if (typeof window === 'undefined' || !window.localStorage) return null;
     const v = window.localStorage.getItem(key);
     return v && v.trim() ? v.trim() : null;
   } catch {
@@ -43,8 +43,8 @@ function deriveFromLocation(): { hostname: string; protocol: string } | null {
     const gb: any = globalThis as any;
     const loc = gb?.location;
     if (!loc) return null;
-    const hostname = loc.hostname || "127.0.0.1";
-    const protocol = loc.protocol || "http:";
+    const hostname = loc.hostname || '127.0.0.1';
+    const protocol = loc.protocol || 'http:';
     return { hostname, protocol };
   } catch {
     return null;
@@ -59,19 +59,23 @@ function currentApiBase(): string {
     if (gb.__API_BASE__) return gb.__API_BASE__;
   } catch {}
 
-  const qHost = readQueryParam("apiHost");
+  const qHost = readQueryParam('apiHost');
   if (qHost) {
     const base = `http://${qHost}:5000`;
     __API_BASE_INTERNAL = base;
-    try { (globalThis as any).__API_BASE__ = base; } catch {}
+    try {
+      (globalThis as any).__API_BASE__ = base;
+    } catch {}
     return base;
   }
 
-  const lsHost = readLocalStorage("apiHost");
+  const lsHost = readLocalStorage('apiHost');
   if (lsHost) {
     const base = `http://${lsHost}:5000`;
     __API_BASE_INTERNAL = base;
-    try { (globalThis as any).__API_BASE__ = base; } catch {}
+    try {
+      (globalThis as any).__API_BASE__ = base;
+    } catch {}
     return base;
   }
 
@@ -79,11 +83,13 @@ function currentApiBase(): string {
   if (loc) {
     const base = `${loc.protocol}//${loc.hostname}:5000`;
     __API_BASE_INTERNAL = base;
-    try { (globalThis as any).__API_BASE__ = base; } catch {}
+    try {
+      (globalThis as any).__API_BASE__ = base;
+    } catch {}
     return base;
   }
 
-  return "http://127.0.0.1:5000";
+  return 'http://127.0.0.1:5000';
 }
 
 export function __getApiBase() {
@@ -119,7 +125,11 @@ export type Video = {
   created_at: string;
 };
 
-export type Thumb = { video_id: number; content_type: string; data_uri: string };
+export type Thumb = {
+  video_id: number;
+  content_type: string;
+  data_uri: string;
+};
 
 /* ======================= Calls ======================= */
 
@@ -132,21 +142,27 @@ export async function listCreators(): Promise<Creator[]> {
 
 export async function getCreatorByName(name: string): Promise<Creator> {
   const API_BASE = currentApiBase();
-  const r = await fetch(`${API_BASE}/get-creator-by-name?name=${encodeURIComponent(name)}`);
+  const r = await fetch(
+    `${API_BASE}/get-creator-by-name?name=${encodeURIComponent(name)}`,
+  );
   if (!r.ok) throw new Error(await r.text());
   return r.json();
 }
 
 export async function getAllVideosData(creatorId: number): Promise<Video[]> {
   const API_BASE = currentApiBase();
-  const r = await fetch(`${API_BASE}/get-all-videos-data?creator_id=${creatorId}`);
+  const r = await fetch(
+    `${API_BASE}/get-all-videos-data?creator_id=${creatorId}`,
+  );
   if (!r.ok) throw new Error(await r.text());
   return r.json();
 }
 
 export async function getAllVideoThumbs(creatorId: number): Promise<Thumb[]> {
   const API_BASE = currentApiBase();
-  const r = await fetch(`${API_BASE}/get-all-videos-thumbnails?creator_id=${creatorId}`);
+  const r = await fetch(
+    `${API_BASE}/get-all-videos-thumbnails?creator_id=${creatorId}`,
+  );
   if (!r.ok) throw new Error(await r.text());
   const j = await r.json();
   return j.ok ? (j.images as Thumb[]) : [];
@@ -154,10 +170,12 @@ export async function getAllVideoThumbs(creatorId: number): Promise<Thumb[]> {
 
 // Optional (only if implemented in Flask)
 export async function getProfile(
-  name: string
+  name: string,
 ): Promise<{ creator: Creator; videos: Video[]; thumbnails: Thumb[] }> {
   const API_BASE = currentApiBase();
-  const r = await fetch(`${API_BASE}/get-profile?name=${encodeURIComponent(name)}`);
+  const r = await fetch(
+    `${API_BASE}/get-profile?name=${encodeURIComponent(name)}`,
+  );
   if (!r.ok) throw new Error(await r.text());
   return r.json();
 }

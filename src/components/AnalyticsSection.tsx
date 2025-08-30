@@ -1,5 +1,5 @@
 // src/components/AnalyticsSectionLight.tsx
-import * as React from 'react';
+import type * as React from 'react';
 
 interface AnalyticsStat {
   value: string;
