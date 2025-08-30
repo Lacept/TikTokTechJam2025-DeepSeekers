@@ -294,7 +294,7 @@ const PremiumCoinsItem = ({ data, isLoading }: BreakdownItemProps) => {
             <text className="breakdown-icon">👑</text>
           </view>
           <view className="breakdown-info">
-            <text className="breakdown-title">Premium Coins</text>
+            <text className="breakdown-title"> ByteCoins</text>
             <text className="breakdown-amount">Loading...</text>
             <text className="breakdown-percentage">-- of total</text>
           </view>
@@ -319,7 +319,7 @@ const PremiumCoinsItem = ({ data, isLoading }: BreakdownItemProps) => {
           <text className="breakdown-icon">👑</text>
         </view>
         <view className="breakdown-info">
-          <text className="breakdown-title">Premium Coins</text>
+          <text className="breakdown-title"> ByteCoins</text>
           <text className="breakdown-amount">${data.revenueBreakdown.premiumCoins.toFixed(2)}</text>
           <text className="breakdown-percentage">{data.revenueBreakdown.premiumPercentage}% of total</text>
         </view>

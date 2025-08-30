@@ -210,7 +210,7 @@ const PremiumCoinsCard = ({ premiumData }: CoinsCardProps) => {
             fontWeight: '600',
             marginBottom: '4px'
           }}>
-            Premium Coins
+            ByteCoins
           </text>
           <text style={{
             color: 'white',

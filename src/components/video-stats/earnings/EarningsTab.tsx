@@ -28,14 +28,14 @@ export function EarningsTab({ videoData }: EarningsTabProps) {
       {/* Total Earnings Card */}
       <TotalEarningsCard videoData={videoData} />
 
-      {/* Earnings Over Time Chart */}
+      {/* Revenue Split Section - Moved to top */}
+      <EarningSplitSection videoData={videoData} />
+
+      {/* Earnings Over Time Chart - Moved below breakdown */}
       <EarningsOverTimeChart videoData={videoData} />
 
       {/* Earnings Per View Card */}
       <EarningsPerViewCard videoData={videoData} />
-
-      {/* Revenue Split Section */}
-      <EarningSplitSection videoData={videoData} />
       
       {/* Extra spacing to ensure scrolling */}
       <view style={{ height: '200px' }}>
