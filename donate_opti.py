@@ -138,3 +138,21 @@ if m.Status == GRB.OPTIMAL:
     print(f"U (quality util) = {U.getValue():.4f}")
     print(f"Normalized terms: R={R_norm.getValue():.3f}, U={U_norm.getValue():.3f}, I={I_norm.getValue():.3f}")
     print(f"Objective value = {m.ObjVal:.4f}")
+
+    # --- Persist x_n and x_p back to the database for this video ---
+    try:
+        conn = sqlite3.connect(db_path)
+        cur = conn.cursor()
+        cur.execute(
+            """
+            UPDATE videos
+            SET x_n = ?, x_p = ?
+            WHERE video_id = ?;
+            """,
+            (float(xn.X), float(xp.X), int(video_id))
+        )
+        conn.commit()
+        conn.close()
+        print(f"DB updated: video_id={video_id} -> x_n={xn.X:.4f}, x_p={xp.X:.4f}")
+    except Exception as e:
+        print(f"WARNING: Failed to update DB for video_id={video_id}: {e}")
